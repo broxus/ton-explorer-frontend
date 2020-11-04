@@ -1,0 +1,8 @@
+<span class="account-color-square" *ngIf="colors"
+      [style.width]="(size * 4) + 'px'"
+      [style.height]="(size * 4) + 'px'"><!--
+--><span *ngFor="let color of colors" class="subsquare"
+         [style.backgroundColor]="color"
+         [style.width]="size + 'px'"
+         [style.height]="size+ 'px'"></span><!--
+--></span>

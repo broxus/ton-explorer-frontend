@@ -1,0 +1,572 @@
+<div class="wrapper" *ngIf="isReady && !error">
+  <app-header></app-header>
+  <main class="main">
+    <section class="border-bottom search-header">
+      <div class="d-flex justify-content-between search-sec-form search-sec-form--long">
+        <app-search-field></app-search-field>
+      </div>
+    </section>
+    <div class="page">
+      <div class="page__top noselect">
+        <div class="larg-container">
+          <nav class="page-breadcrumbs">
+            <a routerLink="/" [innerHTML]="'breadcrumbs.main-page' | translate"></a>
+            <i class="fa fa-caret-right" aria-hidden="true"></i>
+            <a routerLink="/validators" [innerHTML]="'common.Validators' | translate"></a>
+            <i class="fa fa-caret-right" aria-hidden="true"></i>
+            <span [innerHTML]="'breadcrumbs.validator-page' | translate"></span>
+          </nav>
+          <h1 class="page-title">
+            <app-account-square [address]="account.addressHex"
+                                [size]="10"></app-account-square>&nbsp;{{'common.Validator.1' | translate}}
+            {{account.workchain}}:{{account.addressHex | hash: 5}}
+            <span *ngIf="currentRank" class="color-gray-400">#{{currentRank}}</span>
+          </h1>
+        </div>
+      </div>
+      <div class="page__main">
+        <nav class="border-bottom nav-block noselect">
+          <div class="larg-container">
+            <ul class="nav nav-tabs">
+              <li class="nav-item">
+                <span class="cursor-pointer nav-link active"
+                      (click)="scrollTo(main)">{{'account-page.main-details' | translate}}</span>
+              </li>
+              <li class="nav-item">
+                <span class="cursor-pointer nav-link" *ngIf="currentValidator || previousValidator || nextValidator"
+                      (click)="scrollTo(elections)">{{'validators.Elections' | translate}} </span>
+              </li>
+              <li class="nav-item"  *ngIf="recoverTransactions && recoverTransactions.length > 0">
+                <span class="cursor-pointer nav-link"
+                      (click)="scrollTo(profitability)">{{'validators.profitability' | translate}}</span>
+              </li>
+              <li class="nav-item"  *ngIf="recoverTransactions && recoverTransactions.length > 0">
+                <span class="cursor-pointer nav-link"
+                      (click)="scrollTo(calculator)">{{'validator-page.profit-calculator' | translate}}</span>
+              </li>
+              <li class="nav-item">
+                <span class="cursor-pointer nav-link"
+                      (click)="scrollTo(stakeActions)">{{'stakes-list.stake-actions' | translate}}</span>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <section class="table-section" #main>
+          <div class="larg-container">
+            <h2 class="table-section__title">{{'account-page.main-details' | translate}}</h2>
+
+            <dl class="row info-list">
+              <dt class="col-6 col-md-3">{{'common.Account.1' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <a [routerLink]="'/accounts/' + account.workchain + ':' + account.addressHex">
+                  <app-account-square [address]="account.addressHex"></app-account-square>
+                  {{account.workchain}}:{{account.addressHex.toLowerCase()}}
+                </a>
+                <button type="button" class="btn btn-outline-primary btn-copy"
+                        ngxClipboard [cbContent]="account.workchain + ':' +account.addressHex.toLowerCase()">
+                  <i class="fa fa-copy" aria-hidden="true"></i>
+                </button>
+                <br>
+                <span class="show-base64 cursor-pointer"
+                      [class.open]="addressesBase64Open"
+                      (click)="addressesBase64Open = !addressesBase64Open">
+                  <span *ngIf="!addressesBase64Open">{{'common.Show-base64' | translate}}</span>
+                  <span *ngIf="addressesBase64Open">{{'common.Hide-base64' | translate}}</span>
+                  <i class="fa fa fa-caret-down" aria-hidden="true"></i>
+                </span>
+              </dd>
+
+              <ng-container *ngIf="addressesBase64Open">
+
+                <dt class="col-6 col-md-3">{{'account-page.bounceable-base64' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  {{account.addressBase64Bounceable}}
+                  <button type="button" class="btn btn-outline-primary btn-copy"
+                          ngxClipboard [cbContent]="account.addressBase64Bounceable">
+                    <i class="fa fa-copy" aria-hidden="true"></i>
+                  </button>
+                </dd>
+
+                <dt class="col-6 col-md-3">{{'account-page.bounceable-base64-url' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  {{account.addressBase64Bounceable.split('+').join('-').split('/').join('_')}}
+                  <button type="button" class="btn btn-outline-primary btn-copy"
+                          ngxClipboard
+                          [cbContent]="account.addressBase64Bounceable.split('+').join('-').split('/').join('_')">
+                    <i class="fa fa-copy" aria-hidden="true"></i>
+                  </button>
+                </dd>
+
+                <dt class="col-6 col-md-3">{{'account-page.non-bounceable-base64' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  {{account.addressBase64NonBounceable}}
+                  <button type="button" class="btn btn-outline-primary btn-copy" ngxClipboard
+                          [cbContent]="account.addressBase64NonBounceable">
+                    <i class="fa fa-copy" aria-hidden="true"></i>
+                  </button>
+                </dd>
+
+                <dt class="col-6 col-md-3">{{'account-page.non-bounceable-base64-url' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  {{account.addressBase64NonBounceable.split('+').join('-').split('/').join('_')}}
+                  <button type="button" class="btn btn-outline-primary btn-copy" ngxClipboard
+                          [cbContent]="account.addressBase64NonBounceable.split('+').join('-').split('/').join('_')">
+                    <i class="fa fa-copy" aria-hidden="true"></i>
+                  </button>
+                </dd>
+
+              </ng-container>
+
+              <dt class="col-6 col-md-3">{{'account-page.balance' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <span *ngIf="account.balance" [innerHTML]="account.balance.grams | amount"></span>
+                <span *ngIf="!account.balance">0</span>
+                {{'common.TON' | translate}}
+              </dd>
+
+              <ng-container *ngIf="totalProfits && totalProfits.length > 0">
+                <dt class="col-6 col-md-3">{{'validator-page.total-profit' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <span
+                    [innerHTML]="totalProfits[totalProfits.length - 1].value | amount"></span>&nbsp;{{'common.TON' | translate}}
+                </dd>
+              </ng-container>
+            </dl>
+
+          </div>
+        </section>
+
+        <section class="table-section" #elections *ngIf="currentValidator || previousValidator || nextValidator">
+          <div class="larg-container">
+            <h2 class="table-section__title">
+              {{'validators.Elections' | translate}}
+            </h2>
+            <div class="tablewrap">
+              <table class="table table-sm cust-table cust-table--border">
+                <thead>
+                <tr>
+                  <th scope="col">{{'validators.Since' | translate}}</th>
+                  <th scope="col">{{'validators.Until' | translate}}</th>
+                  <th scope="col">{{'validators.public-key' | translate}}</th>
+                  <th scope="col">{{'validators.adnl-address' | translate}}</th>
+                  <th scope="col">{{'validators.weight' | translate}}</th>
+                  <th scope="col">{{'validators.stake' | translate}}, {{'common.TON' | translate}}</th>
+                  <th scope="col">{{'validators-list-page.bonuses' | translate}}, {{'common.TON' | translate}}</th>
+                  <th scope="col">{{'validator-page.columns.profit-percent' | translate}}</th>
+                </tr>
+                </thead>
+                <tbody>
+
+
+                <tr *ngIf="nextValidator">
+                  <td>{{(validatorsState.next.utimeSince | time: 'llll') | async}}</td>
+                  <td>{{(validatorsState.next.utimeUntil | time: 'llll') | async}}</td>
+                  <td>
+                    <span [title]="nextValidator.publicKey | hash">{{nextValidator.publicKey | hash: 3}}</span>&nbsp;<!--
+                 --><button type="button" class="btn btn-sm btn-outline-primary btn-copy"
+                            ngxClipboard [cbContent]="nextValidator.publicKey | hash">
+                      <i class="fa fa-copy fa-xs" aria-hidden="true"></i>
+                    </button>
+                  </td>
+                  <td>
+                    <span [title]="nextValidator.adnlAddr | hash">{{nextValidator.adnlAddr | hash: 3}}</span>&nbsp;<!--
+                 --><button type="button" class="btn btn-sm btn-outline-primary btn-copy"
+                            ngxClipboard [cbContent]="nextValidator.adnlAddr | hash">
+                      <i class="fa fa-copy fa-xs" aria-hidden="true"></i>
+                    </button>
+                  </td>
+                  <td [title]="computeWeight(nextValidator, validatorsState.next).mul(100) + '%'">
+                    {{computeWeight(nextValidator, validatorsState.next).mul(100).toFixed(4)}}&nbsp;%
+                  </td>
+                  <td>
+                    <span *ngIf="nextElectionsStats"
+                          [innerHTML]="computeStake(nextValidator, validatorsState.next, nextElectionsStats) | amount"></span>
+                  </td>
+                  <td>
+                    <span *ngIf="nextElectionsStats"
+                          [innerHTML]="computeBonuses(nextValidator, validatorsState.next, nextElectionsStats) | amount"></span>
+                  </td>
+                  <td></td>
+                </tr>
+
+                <tr *ngIf="currentValidator">
+                  <td>{{(validatorsState.current.utimeSince | time: 'llll') | async}}</td>
+                  <td>{{(validatorsState.current.utimeUntil | time: 'llll') | async}}</td>
+                  <td>
+                    <span [title]="currentValidator.publicKey | hash">{{currentValidator.publicKey | hash: 3}}</span>&nbsp;<!--
+                 --><button type="button" class="btn btn-sm btn-outline-primary btn-copy"
+                            ngxClipboard [cbContent]="currentValidator.publicKey | hash">
+                      <i class="fa fa-copy fa-xs" aria-hidden="true"></i>
+                    </button>
+                  </td>
+                  <td>
+                    <span [title]="currentValidator.adnlAddr | hash">{{currentValidator.adnlAddr | hash: 3}}</span>&nbsp;<!--
+                 --><button type="button" class="btn btn-sm btn-outline-primary btn-copy"
+                            ngxClipboard [cbContent]="currentValidator.adnlAddr | hash">
+                      <i class="fa fa-copy fa-xs" aria-hidden="true"></i>
+                    </button>
+                  </td>
+                  <td [title]="computeWeight(currentValidator, validatorsState.current).mul(100) + '%'">
+                    {{computeWeight(currentValidator, validatorsState.current).mul(100).toFixed(4)}}&nbsp;%
+                  </td>
+                  <td>
+                    <span *ngIf="currentElectionsStats"
+                          [innerHTML]="computeStake(currentValidator, validatorsState.current, currentElectionsStats) | amount"></span>
+                  </td>
+                  <td>
+                    <span *ngIf="currentElectionsStats"
+                          [innerHTML]="computeBonuses(currentValidator, validatorsState.current, currentElectionsStats) | amount"></span>
+                  </td>
+                  <td>
+                    <span *ngIf="currentProfitPercent" [title]="currentProfitPercent + '%'">
+                      {{currentProfitPercent.round(4)}}%
+                    </span>
+                  </td>
+                </tr>
+
+
+                <tr *ngIf="previousValidator">
+                  <td>{{(validatorsState.previous.utimeSince | time: 'llll') | async}}</td>
+                  <td>{{(validatorsState.previous.utimeUntil | time: 'llll') | async}}</td>
+                  <td>
+                    <span [title]="previousValidator.publicKey | hash">{{previousValidator.publicKey | hash: 3}}</span>&nbsp;<!--
+                 --><button type="button" class="btn btn-sm btn-outline-primary btn-copy"
+                            ngxClipboard [cbContent]="previousValidator.publicKey | hash">
+                      <i class="fa fa-copy fa-xs" aria-hidden="true"></i>
+                    </button>
+                  </td>
+                  <td>
+                    <span [title]="previousValidator.adnlAddr | hash">{{previousValidator.adnlAddr | hash: 3}}</span>&nbsp;<!--
+                 --><button type="button" class="btn btn-sm btn-outline-primary btn-copy"
+                            ngxClipboard [cbContent]="previousValidator.adnlAddr | hash">
+                      <i class="fa fa-copy fa-xs" aria-hidden="true"></i>
+                    </button>
+                  </td>
+                  <td [title]="computeWeight(previousValidator, validatorsState.previous).mul(100) + '%'">
+                    {{computeWeight(previousValidator, validatorsState.previous).mul(100).toFixed(4)}}&nbsp;%
+                  </td>
+                  <td>
+                    <span *ngIf="previousElectionsStats"
+                          [innerHTML]="computeStake(previousValidator, validatorsState.previous, previousElectionsStats) | amount"></span>
+                  </td>
+                  <td>
+                    <span *ngIf="previousElectionsStats"
+                          [innerHTML]="computeBonuses(previousValidator, validatorsState.previous, previousElectionsStats) | amount"></span>
+                  </td>
+                  <td>
+                    <span *ngIf="previousProfitPercent" [title]="previousProfitPercent + '%'">
+                      {{previousProfitPercent.round(4)}}%
+                    </span>
+                  </td>
+                </tr>
+
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="table-section"  *ngIf="recoverTransactions && recoverTransactions.length > 0" #profitability>
+          <div class="larg-container">
+            <h2 class="table-section__title">
+              {{'validators.profitability' | translate}}
+            </h2>
+            <div class="tablewrap">
+              <table class="table table-sm cust-table cust-table--border">
+                <thead>
+                <tr>
+                  <th scope="col">{{'validator-page.columns.elections' | translate}}</th>
+                  <th scope="col">{{'validator-page.columns.stake-sent' | translate}}</th>
+                  <th scope="col">{{'validator-page.columns.stake-accounted' | translate}}</th>
+                  <th scope="col">{{'validator-page.columns.recover-amount' | translate}}</th>
+                  <th scope="col">{{'validator-page.columns.profit' | translate}}</th>
+                  <th scope="col">{{'validator-page.columns.profit-percent' | translate}}</th>
+                  <th scope="col">{{'messages.date-n-time' | translate}}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <ng-container *ngFor="let transaction of recoverTransactions; let i = index">
+                  <tr
+                    *ngIf="i >= (profitabilityPage - 1) * profitabilityPageSize && i < profitabilityPage * profitabilityPageSize">
+                    <td>
+                    <span *ngIf="electionTimes[transaction.transactionHash]">
+                      <ng-container *ngFor="let electionTime of electionTimes[transaction.transactionHash]">
+                          {{(electionTime | time: 'llll') | async}}<br>
+                      </ng-container>
+                    </span>
+                    </td>
+                    <td>
+                      <ng-container *ngIf="recoveredStakes[transaction.transactionHash].length === 1">
+                        <a
+                          [routerLink]="'/transactions/' + recoveredStakes[transaction.transactionHash][0].transactionHash"
+                          [title]="recoveredStakes[transaction.transactionHash][0].transactionHash" class="like-link">
+                              <span *ngIf="unfrozenStakeAmounts[transaction.transactionHash]"
+                                    [innerHTML]="unfrozenStakeAmounts[transaction.transactionHash] | amount">
+                              </span>
+                        </a>
+                      </ng-container>
+                      <ng-container *ngIf="recoveredStakes[transaction.transactionHash].length > 1">
+                        <span *ngIf="unfrozenStakeAmounts[transaction.transactionHash]"
+                              [innerHTML]="unfrozenStakeAmounts[transaction.transactionHash] | amount"></span>
+                        <br>
+                        <span *ngIf="recoveredStakes[transaction.transactionHash]">
+                          <ng-container
+                            *ngFor="let stakeTransaction of recoveredStakes[transaction.transactionHash]; let i = index">
+                            <a [routerLink]="'/transactions/' + stakeTransaction.transactionHash"
+                               [title]="stakeTransaction.transactionHash" class="like-link">[{{alphas[i]}}]</a>
+                          </ng-container>
+                        </span>
+                      </ng-container>
+                    </td>
+                    <td>
+                      <span
+                        *ngIf="unfrozenStakeAmounts[transaction.transactionHash] && unaccountedAmmounts[transaction.transactionHash]"
+                        [innerHTML]="unfrozenStakeAmounts[transaction.transactionHash]
+                            .minus(unaccountedAmmounts[transaction.transactionHash]) | amount">
+                      </span>
+                    </td>
+                    <td>
+                      <ng-container *ngIf="(!mergedRecovers[transaction.transactionHash] || mergedRecovers[transaction.transactionHash].length == 0) &&
+                                           (!calculationErrorItems[transaction.transactionHash] || calculationErrorItems[transaction.transactionHash].length == 0)">
+                        <a class="like-link" [routerLink]="'/transactions/' + transaction.transactionHash"
+                           [innerHTML]="recoverValues[transaction.transactionHash] | amount">
+                        </a>
+                      </ng-container>
+                      <ng-container *ngIf="(mergedRecovers[transaction.transactionHash] && mergedRecovers[transaction.transactionHash].length > 0) ||
+                                           (calculationErrorItems[transaction.transactionHash] && calculationErrorItems[transaction.transactionHash].length > 0)">
+                        <span [innerHTML]="recoverValues[transaction.transactionHash] | amount"></span>
+                        <br>
+                        <a class="like-link" [routerLink]="'/transactions/' + transaction.transactionHash">[{{alphas[0]}}]</a>
+                        <ng-container *ngFor="let m of (mergedRecovers[transaction.transactionHash] || []); let i = index">
+                          <a class="like-link text-danger" [routerLink]="'/transactions/' + m.transactionHash">[{{alphas[i + 1]}}]</a>
+                        </ng-container>
+                        <ng-container *ngFor="let err of (calculationErrorItems[transaction.transactionHash] || []); let i = index">
+                          <a class="like-link text-danger" [routerLink]="'/transactions/' + err.transactionHash"><!--
+                            -->[{{alphas[i + (mergedRecovers[transaction.transactionHash] ? mergedRecovers[transaction.transactionHash].length : 0) + 1]}}]<!--
+                       --></a>
+                        </ng-container>
+                      </ng-container>
+                    </td>
+                    <td>
+                    <span *ngIf="recoverProfits[transaction.transactionHash]"
+                          [innerHTML]="recoverProfits[transaction.transactionHash] | amount">
+                    </span>
+                    </td>
+                    <td>
+                      <span *ngIf="recoverProfitsPercents[transaction.transactionHash]"
+                            [title]="recoverProfitsPercents[transaction.transactionHash] + '%'">
+                        {{recoverProfitsPercents[transaction.transactionHash].round(4)}}%
+                      </span>
+                    </td>
+                    <td>
+                      <span *ngIf="transaction.time">{{(transaction.time | time: 'lll') | async}}</span>
+                    </td>
+                  </tr>
+                </ng-container>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="d-flex justify-content-between tabfooter table-section__footer">
+              <button type="button" class="btn btn-outline-primary" (click)="exportProfitability()">
+                {{'common.Export-to-csv' | translate}}
+              </button>
+              <div class="d-flex justify-content-between table-section__bar">
+                <div class="table-section__bar-title">{{'paging.page-size' | translate}}</div>
+                <select class="custom-select" [(ngModel)]="profitabilityPageSize"
+                        (change)="changeProfitabilityPageSize()">
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+                <button type="button" class="btn btn-outline-primary btn-arrow" [disabled]="profitabilityPage <= 1"
+                        (click)="prevProfitabilityPage()">
+                  <i class="fa fa-caret-left" aria-hidden="true"></i>
+                  <span>{{'paging.previous-page' | translate}}</span>
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-arrow" [disabled]="!hasNextProfitabilityPage()"
+                        (click)="nextProfitabilityPage()">
+                  <span>{{'paging.next-page' | translate}}</span>
+                  <i class="fa fa-caret-right" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <section class="table-section" *ngIf="recoverTransactions && recoverTransactions.length > 0" #calculator>
+          <div class="larg-container">
+            <h2 class="table-section__title">
+              {{'validator-page.profit-calculator' | translate}}
+            </h2>
+            <div class="row">
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label for="delegatedAmount">{{'validator-page.delegated-amount' | translate}}</label>
+                  <input type="number" id="delegatedAmount" required="" class="form-control"
+                         (change)="updateValue('delegatedAmount')"
+                         [class.is-invalid]="calculatorFormErrors.delegatedAmount && calculatorFormErrors.delegatedAmount.length > 0"
+                         [class.has-value]="calculationParams.delegatedAmount || calculationParams.delegatedAmount === 0"
+                         [(ngModel)]="calculationParams.delegatedAmount">
+                  <ng-container *ngIf="calculatorFormErrors.delegatedAmount && calculatorFormErrors.delegatedAmount.length > 0">
+                    <div class="text-danger" *ngFor="let error of calculatorFormErrors.delegatedAmount">
+                      {{error | translate}}
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label for="calculateFrom">{{'common.dates.From' | translate}}</label>
+                  <input type="text" id="calculateFrom"
+                         [(ngModel)]="calculationParams.calculateFrom"
+                         bsDatepicker
+                         [class.is-invalid]="calculatorFormErrors.calculateFrom && calculatorFormErrors.calculateFrom.length > 0"
+                         [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD HH:mm', containerClass: 'theme-dark-blue' }"
+                         (bsValueChange)="updateValue('calculateFrom')"
+                         required="" class="form-control">
+                  <ng-container *ngIf="calculatorFormErrors.calculateFrom && calculatorFormErrors.calculateFrom.length > 0">
+                    <div class="text-danger" *ngFor="let error of calculatorFormErrors.calculateFrom">
+                      {{error | translate}}
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label for="calculateTo">{{'common.dates.To' | translate}}</label>
+                  <input type="text" id="calculateTo"
+                         [(ngModel)]="calculationParams.calculateTo"
+                         bsDatepicker
+                         [class.is-invalid]="calculatorFormErrors.calculateTo && calculatorFormErrors.calculateTo.length > 0"
+                         [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD HH:mm', containerClass: 'theme-dark-blue' }"
+                         (bsValueChange)="updateValue('calculateTo')"
+                         required="" class="form-control">
+                  <ng-container *ngIf="calculatorFormErrors.calculateTo && calculatorFormErrors.calculateTo.length > 0">
+                    <div class="text-danger" *ngFor="let error of calculatorFormErrors.calculateTo">
+                      {{error | translate}}
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div style="margin-bottom: 0.5rem; font-size: 1rem; line-height: 1.5;">&nbsp;</div>
+                <button type="submit" class="btn btn-primary" (click)="calculateProfit()">{{'validator-page.calculate' | translate}}</button>
+              </div>
+            </div>
+            <div class="tablewrap normal-first-child-padding" *ngIf="calculationResults && calculationResults.length > 0">
+
+              <table class="table table-striped table-sm cust-table cust-table--border mt-3">
+                <thead>
+                <tr>
+                  <th scope="col">{{'validator-page.columns.elections' | translate}}</th>
+                  <th scope="col">{{'validator-page.columns.stake-accounted' | translate}}</th>
+                  <th scope="col">{{'validator-page.columns.profit' | translate}}</th>
+                  <th scope="col">{{'validator-page.columns.recover-amount' | translate}}</th>
+                  <th scope="col">{{'validator-page.columns.profit-percent' | translate}}</th>
+                  <th scope="col">{{'messages.date-n-time' | translate}}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="table-success">
+                  <td><strong>{{'common.Total' | translate}}</strong></td>
+                  <td></td>
+                  <td><strong [innerHTML]="calculationTotalProfit | amount"></strong></td>
+                  <td></td>
+                  <td><strong [title]="calculationTotalProfitPercent + '%'">{{calculationTotalProfitPercent.round(4, 3)}}%</strong></td>
+                  <td></td>
+                </tr>
+                <ng-container  *ngFor="let item of calculationResults; let i = index">
+                  <tr *ngIf="calculationResults.length > 10 && !showAllCalculations && i == 4">
+                    <td colspan="6" class="cursor-pointer text-center"
+                        (click)="showAllCalculations = true">{{'validator-page.show-all' | translate}}</td>
+                  </tr>
+                  <tr *ngIf="calculationResults.length <= 16 || showAllCalculations || i < 4 || i > calculationResults.length - 5">
+                    <td>
+                      {{(item.electionTime | time: 'llll') | async}}
+                    </td>
+                    <td>
+                      <span [innerHTML]="item.startValue | amount"
+                            [class.font-weight-bolder]="calculationFirstStake && calculationFirstStake.electionTime == item.electionTime ||
+                                                        calculationSecondStake && calculationSecondStake.electionTime == item.electionTime"></span>
+                      &nbsp;<i class="fa fa-coins" [class.text-warning]="item.part == 1" [class.text-success]="item.part == 2"></i>
+                    </td>
+                    <td>
+                      <span [innerHTML]="item.profit | amount"></span>
+                    </td>
+                    <td>
+                      <span [innerHTML]="item.endValue | amount"
+                            [class.font-weight-bolder]="calculationLatestRecovers.indexOf(item.transactionHash) !== -1"></span>
+                    </td>
+                    <td>
+                      <span *ngIf="recoverProfitsPercents[item.transactionHash]"
+                            [title]="recoverProfitsPercents[item.transactionHash] + '%'">
+                        {{recoverProfitsPercents[item.transactionHash].round(4)}}%
+                      </span>
+                    </td>
+                    <td>{{(item.time | time: 'lll') | async}}</td>
+                  </tr>
+                </ng-container>
+<!--                <tr>-->
+<!--                  <td colspan="6" class="text-center">-->
+<!--                    <ng-container *ngIf="currentLang === 'ko'">-->
+<!--                      <a [routerLink]="'/transactions/' + calculationSecondStake.transactionHash" class="like-link">-->
+<!--                        {{(calculationSecondStake.time | time: 'lll') | async}}-->
+<!--                      </a>-->
+<!--                    </ng-container>-->
+<!--                    {{'validator-page.first-stake.part-1' | translate}}-->
+<!--                    <span [innerHTML]="calculationStartValue.div(2) | amount"></span>&nbsp;<i class="fa fa-coins text-success"></i>-->
+<!--                    {{'validator-page.first-stake.part-2' | translate}}-->
+<!--                    <ng-container *ngIf="currentLang === 'en'">-->
+<!--                      <a [routerLink]="'/transactions/' + calculationSecondStake.transactionHash" class="like-link">-->
+<!--                        {{(calculationSecondStake.time | time: 'lll') | async}}-->
+<!--                      </a>-->
+<!--                    </ng-container>-->
+<!--                  </td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                  <td colspan="6" class="text-center">-->
+<!--                    <ng-container *ngIf="currentLang === 'ko'">-->
+<!--                      <a [routerLink]="'/transactions/' + calculationFirstStake.transactionHash" class="like-link">-->
+<!--                        {{(calculationFirstStake.time | time: 'lll') | async}}-->
+<!--                      </a>-->
+<!--                    </ng-container>-->
+<!--                    {{'validator-page.first-stake.part-1' | translate}}-->
+<!--                    <span [innerHTML]="calculationStartValue.div(2) | amount"></span>&nbsp;<i class="fa fa-coins text-warning"></i>-->
+<!--                    {{'validator-page.first-stake.part-2' | translate}}-->
+<!--                    <ng-container *ngIf="currentLang === 'en'">-->
+<!--                      <a [routerLink]="'/transactions/' + calculationFirstStake.transactionHash" class="like-link">-->
+<!--                        {{(calculationFirstStake.time | time: 'lll') | async}}-->
+<!--                      </a>-->
+<!--                    </ng-container>-->
+<!--                  </td>-->
+<!--                </tr>-->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="d-flex justify-content-between tabfooter table-section__footer">
+              <button type="button" class="btn btn-outline-primary" (click)="exportCalculatorResults()">
+                {{'common.Export-to-csv' | translate}}
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <div #stakeActions>
+          <app-stakes [account]="{workchain: account.workchain, address: account.addressHex}"
+                      [showHeader]="true"></app-stakes>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+<ng-container *ngIf="error === 404">
+  <h1>404</h1>
+</ng-container>

@@ -1,0 +1,28 @@
+<div class="wrapper">
+  <app-header></app-header>
+  <main class="main">
+    <section class="border-bottom search-header">
+      <div class="d-flex justify-content-between search-sec-form search-sec-form--long">
+        <app-search-field></app-search-field>
+      </div>
+    </section>
+    <div class="page">
+      <div class="page__top noselect">
+        <div class="larg-container">
+          <nav class="page-breadcrumbs">
+            <a routerLink="/">{{'breadcrumbs.main-page' | translate}}</a>
+            <i class="fa fa-caret-right" aria-hidden="true"></i>
+            <a routerLink="/validators">{{'common.Validators' | translate}}</a>
+            <i class="fa fa-caret-right" aria-hidden="true"></i>
+            <span>{{'stakes-list.stake-actions' | translate}}</span>
+          </nav>
+          <h1 class="page-title">{{'stakes-list.stake-actions' | translate}}</h1>
+        </div>
+      </div>
+
+      <div class="page__main">
+        <app-stakes [pageSize]="20"></app-stakes>
+      </div>
+    </div>
+  </main>
+</div>

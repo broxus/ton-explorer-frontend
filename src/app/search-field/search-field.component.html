@@ -1,0 +1,85 @@
+<div class="input-group" #searchWrapper>
+  <input type="text" class="form-control form-control-lg"
+         [(ngModel)]="query"
+         (keyup)="search()"
+         (keypress)="search()"
+         (keydown)="search()"
+         (focus)="search()"
+         [placeholder]="'search.field.placeholder' | translate">
+            <ul class="search-sec-form__dropsearch" *ngIf="result">
+              <li class="cursor-default"
+                  *ngIf="
+                  !result.validator &&
+                  !result.transaction &&
+                  (!result.accounts || result.accounts.length === 0) &&
+                  (!result.blocks || result.blocks.length === 0) &&
+                  (!result.messages || result.messages.length === 0)">
+                <span class="color-gray-600">No results</span>
+              </li>
+              <ng-container *ngIf="result.blocks && result.blocks.length !== 0">
+                <h5 *ngIf="result.blocks.length === 1">{{'common.Block.1' | translate}}:</h5>
+                <h5 *ngIf="result.blocks.length > 1">{{'common.Blocks' | translate}}:</h5>
+                <li *ngFor="let block of result.blocks">
+                  <a [routerLink]="'/blocks/' + block.roothash">
+                    ({{block.workchain}} :
+                    {{block.shard.substr(0, 2)}} :
+                    {{block.seqno}})
+                    &middot;
+                    {{block.roothash | hash: 9}}
+                    &middot;
+                    {{(block.time | time) | async}}
+                  </a>
+                </li>
+              </ng-container>
+              <ng-container *ngIf="result.messages && result.messages.length !== 0">
+                <h5 *ngIf="result.messages.length === 1">{{'common.Message.1' | translate}}:</h5>
+                <h5 *ngIf="result.messages.length > 1">{{'common.Messages' | translate}}:</h5>
+                <li *ngFor="let item of result.messages">
+                  <a [routerLink]="'/transactions/' + item.transaction.hash + '/' + (item.message.out ? '/out/' + item.message.n : '/in')">
+                    {{item.message.bodyHash | hash: 9}}
+                    &middot;
+                    <span *ngIf="item.message.out">
+                      ({{item.transaction.hash | hash : 3}} : {{'message.outgoing.short' | translate}} : {{item.message.n}})
+                    </span>
+                    <span *ngIf="!item.message.out">
+                      ({{item.transaction.hash | hash : 3}} : {{'message.incoming.short' | translate}})
+                    </span>
+                    &middot;
+                    {{(item.transaction.time | time) | async}}
+                  </a>
+                </li>
+              </ng-container>
+              <ng-container *ngIf="result.accounts && result.accounts.length !== 0">
+                <h5>{{'common.Accounts' | translate}}:</h5>
+                <li *ngFor="let account of result.accounts">
+                  <a [routerLink]="'/accounts/' + account.workchain + ':' + account.addressHex">
+                    <app-account-square [address]="account.addressHex"></app-account-square>
+                    {{account.workchain}}:{{account.addressHex | hash: 9}}
+                  </a>
+                  <ng-container *ngIf="account.balance && account.balance.grams">
+                    &middot;
+                    <span [innerHTML]="account.balance.grams | amount"></span> {{'common.TON' | translate}}
+                  </ng-container>
+                </li>
+              </ng-container>
+              <ng-container *ngIf="result.validator">
+                <h5>{{'common.Validator.1' | translate}}:</h5>
+                <li>
+                  <a [routerLink]="'/validators/' + result.validator.workchain + ':' + result.validator.address">
+                    <app-account-square [address]="result.validator.address"></app-account-square>
+                    {{result.validator.workchain}}:{{result.validator.address | hash: 9}}
+                  </a>
+                </li>
+              </ng-container>
+              <ng-container *ngIf="result.transaction">
+                <h5>{{'common.Transaction.1' | translate}}:</h5>
+                <li>
+                  <a [routerLink]="'/transactions/' + result.transaction.hash">
+                    {{result.transaction.hash | hash: 9}}
+                    &middot;
+                    {{(result.transaction.time | time) | async}}
+                  </a>
+                </li>
+              </ng-container>
+            </ul>
+</div>

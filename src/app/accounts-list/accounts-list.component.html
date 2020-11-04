@@ -1,0 +1,147 @@
+<div class="wrapper">
+  <app-header></app-header>
+  <main class="main">
+    <section class="border-bottom search-header">
+      <div class="d-flex justify-content-between search-sec-form search-sec-form--long">
+        <app-search-field></app-search-field>
+      </div>
+    </section>
+    <div class="page">
+      <div class="page__top noselect">
+        <div class="larg-container">
+          <nav class="page-breadcrumbs">
+            <a routerLink="/">{{'breadcrumbs.main-page' | translate}}</a>
+            <i class="fa fa-caret-right" aria-hidden="true"></i>
+            <span [innerHTML]="'common.Accounts' | translate"></span>
+          </nav>
+          <h1 class="page-title">{{'common.Accounts' | translate}}</h1>
+        </div>
+      </div>
+
+      <div class="border-bottom section counters">
+        <div class="larg-container">
+          <ul class="d-flex justify-content-between counters__wrap">
+            <li class="counters__item counters__item--4">
+              <span *ngIf="currentLang === 'ko'">{{'common.Accounts' | translate}}</span>
+              <b *ngIf="stats">{{stats.counts.TOTAL.accountsCreated | numberWithSpaces}}{{'common.after-count' | translate}}</b>
+              <b *ngIf="!stats" class="noselect">--</b>
+              <span *ngIf="currentLang === 'en'">{{'common.Accounts' | translate}}</span>
+            </li>
+            <li class="counters__item counters__item--4">
+              <span *ngIf="currentLang === 'ko'">{{'accounts-list.stats.new-24h' | translate}}</span>
+              <b *ngIf="stats">{{stats.counts.D1.accountsCreated | numberWithSpaces}}{{'common.after-count' | translate}}</b>
+              <b *ngIf="!stats" class="noselect">--</b>
+              <span *ngIf="currentLang === 'en'">{{'accounts-list.stats.new-24h' | translate}}</span>
+            </li>
+            <li class="counters__item counters__item--4">
+              <span *ngIf="currentLang === 'ko'">{{'accounts-list.stats.active-24h' | translate}}</span>
+              <b *ngIf="stats">{{stats.counts.D1.accountsActive | numberWithSpaces}}{{'common.after-count' | translate}}</b>
+              <b *ngIf="!stats" class="noselect">--</b>
+              <span *ngIf="currentLang === 'en'">{{'accounts-list.stats.active-24h' | translate}}</span>
+            </li>
+            <li class="counters__item counters__item--4">
+              <span *ngIf="currentLang === 'ko'">{{'accounts-list.stats.active-1h' | translate}}</span>
+              <b *ngIf="stats">{{stats.counts.H1.accountsActive | numberWithSpaces}}{{'common.after-count' | translate}}</b>
+              <b *ngIf="!stats" class="noselect">--</b>
+              <span *ngIf="currentLang === 'en'">{{'accounts-list.stats.active-1h' | translate}}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="page__main">
+
+
+        <section class="table-section" *ngIf="accounts">
+          <div class="larg-container">
+            <div class="tablewrap">
+              <table class="table table-sm cust-table cust-table--border">
+                <thead>
+                <tr>
+                  <th scope="col" class="cursor-default">{{'accounts-list.column.address' | translate}}</th>
+                  <th scope="col" class="cursor-pointer" (click)="changeOrder('balance')">
+                    {{'accounts-list.column.balance' | translate}}&nbsp;({{'common.TON' | translate}})
+                    <span *ngIf="request.orderColumn == 'balance' && request.asc">&darr;</span>
+                    <span *ngIf="request.orderColumn == 'balance' && !request.asc">&uarr;</span>
+                  </th>
+                  <th scope="col" class="cursor-pointer" (click)="changeOrder('created')">
+                    {{'accounts-list.column.created' | translate}}
+                    <span *ngIf="request.orderColumn == 'created' && request.asc">&darr;</span>
+                    <span *ngIf="request.orderColumn == 'created' && !request.asc">&uarr;</span>
+                  </th>
+                  <th scope="col" class="cursor-pointer" (click)="changeOrder('updated')">
+                    {{'accounts-list.column.updated' | translate}}
+                    <span *ngIf="request.orderColumn == 'updated' && request.asc">&darr;</span>
+                    <span *ngIf="request.orderColumn == 'updated' && !request.asc">&uarr;</span>
+                  </th>
+                </tr>
+                </thead>
+                <tbody [class.loading]="loading">
+
+                <tr *ngFor="let account of accounts">
+                  <td>
+                    <app-account-square [address]="account.address"></app-account-square>&nbsp;
+                    <ng-container *ngIf="namedAddresses.indexOf(account.address) !== -1">
+                      <a class="like-link" [routerLink]="'/accounts/' + account.workchain + ':' + account.address" [title]="account.workchain + ':' + account.address | hash">
+                        {{'named-address.' + account.address | translate}}
+                      </a>
+                    </ng-container>
+                    <ng-container *ngIf="namedAddresses.indexOf(account.address) === -1">
+                      <a class="like-link" [routerLink]="'/accounts/' + account.workchain + ':' + account.address" [title]="account.workchain + ':' + account.address | hash">
+                        {{account.address | address : 10 : account.workchain}}
+                      </a>
+                    </ng-container>
+                  </td>
+                  <td><span [innerHTML]="account.balance | amount"></span></td>
+                  <td>
+                    <ng-container *ngIf="account.created != 0">
+                      {{(account.created | time : 'LLL') | async}}
+                    </ng-container>
+                    <ng-container *ngIf="account.created == 0">
+                      {{'accounts-list.zero-state' | translate}}
+                    </ng-container>
+                  </td>
+                  <td>
+                    <ng-container *ngIf="account.updated != 0">
+                      {{(account.updated | time : 'LLL') | async}}
+                    </ng-container>
+                    <ng-container *ngIf="account.updated == 0">
+                      {{'accounts-list.never' | translate}}
+                    </ng-container>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="d-flex justify-content-between tabfooter table-section__footer">
+              <button type="button" class="btn btn-outline-primary" (click)="exportCsv()">
+                {{'common.Export-to-csv' | translate}}
+              </button>
+              <div class="d-flex justify-content-between table-section__bar">
+                <div class="table-section__bar-title">{{'paging.page-size' | translate}}</div>
+                <select class="custom-select" [(ngModel)]="pageSize" (change)="changePageSize()">
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+                <button type="button" class="btn btn-outline-primary btn-arrow" [disabled]="page <= 1" (click)="prevPage()">
+                  <i class="fa fa-caret-left" aria-hidden="true"></i>
+                  <span>{{'paging.previous-page' | translate}}</span>
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-arrow" [disabled]="!hasNextPage()" (click)="nextPage()">
+                  <span>{{'paging.next-page' | translate}}</span>
+                  <i class="fa fa-caret-right" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+
+      </div>
+    </div>
+  </main>
+</div>

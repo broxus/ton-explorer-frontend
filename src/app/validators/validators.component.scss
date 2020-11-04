@@ -1,0 +1,28 @@
+.has-new {
+  text-align: center;
+  cursor: pointer;
+}
+.loading {
+  opacity: 0.5;
+}
+.btn-copy {
+  padding: 0 6px;
+  height: 24px;
+}
+.table-section__title {
+  font-size: 20px;
+}
+
+
+.validation-cycle-header-dates {
+  float: right;
+}
+
+@media only screen and (max-width : 767px){
+  .validation-cycle-header-title {
+    display: none;
+  }
+  .validation-cycle-header-dates {
+    float: none;
+  }
+}

@@ -1,0 +1,17 @@
+.account-color-square {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  vertical-align: middle;
+  position: relative;
+  clear: both;
+  overflow: hidden;
+  .subsquare {
+    height: 4px;
+    width: 4px;
+    float: left;
+    display: block;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+}

@@ -1,0 +1,89 @@
+<div class="wrapper">
+  <app-header></app-header>
+  <main class="main">
+    <section class="border-bottom search-header">
+      <div class="d-flex justify-content-between search-sec-form search-sec-form--long">
+        <app-search-field></app-search-field>
+      </div>
+    </section>
+    <div class="page">
+      <div class="page__top noselect">
+        <div class="larg-container">
+          <nav class="page-breadcrumbs">
+            <a routerLink="/">{{'common.Explorer' | translate}}</a>
+            <i class="fa fa-caret-right" aria-hidden="true"></i>
+            <span>{{'common.Blocks' | translate}}</span>
+          </nav>
+          <h1 class="page-title">{{'common.Blocks' | translate}}</h1>
+        </div>
+      </div>
+      <div class="page__main">
+        <section class="table-section" *ngIf="blocks">
+          <div class="larg-container">
+            <div class="tablewrap">
+              <label for="showEmptyBlocks" class="cursor-pointer">
+                <input type="checkbox" id="showEmptyBlocks" [(ngModel)]="showEmptyBlocks" (change)="loadData()">&nbsp;<!--
+                  -->{{'blocks.show-empty' | translate}}
+              </label>
+              <div role="alert"
+                   *ngIf="newCount && newCount > 0"
+                   class="has-new alert alert-primary"
+                   (click)="loadData()"
+                   [translate]="'blocks.new-items-found'" [translateParams]="{newCount: newCount}"></div>
+              <table class="table table-sm cust-table cust-table--border">
+                <thead>
+                <tr class="noselect">
+                  <th scope="col">{{'common.ID' | translate}}</th>
+                  <th scope="col">{{'blocks.workchain' | translate}}</th>
+                  <th scope="col">{{'blocks.shard' | translate}}</th>
+                  <th scope="col">{{'blocks.number' | translate}}</th>
+                  <th scope="col">{{'blocks.transactions' | translate}}</th>
+                  <th scope="col">{{'blocks.date-n-time' | translate}}</th>
+                </tr>
+                </thead>
+                <tbody [class.loading]="loading">
+                <tr *ngFor="let block of blocks; let i = index">
+                  <td><a class="like-link" [routerLink]="'/blocks/' + block.roothash"
+                         [title]="block.roothash | hash">{{block.roothash | hash: 10}}</a>
+                  </td>
+                  <td>{{block.workchain}}</td>
+                  <td>{{block.shard | shard: 'full'}}</td>
+                  <td><a class="like-link" [routerLink]="'/blocks/' + block.roothash">{{block.seqno}}</a></td>
+                  <td>{{block.transactionsCount}}</td>
+                  <td>{{(block.time | time) | async}}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="d-flex justify-content-between tabfooter table-section__footer">
+              <button type="button" class="btn btn-outline-primary" (click)="exportCsv()">
+                {{'common.Export-to-csv' | translate}}
+              </button>
+              <div class="d-flex justify-content-between table-section__bar">
+                <div class="table-section__bar-title">{{'paging.page-size' | translate}}</div>
+                <select class="custom-select" [(ngModel)]="pageSize" (change)="changePageSize()">
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+                <button type="button" class="btn btn-outline-primary btn-arrow" [disabled]="page <= 1" (click)="prevPage()">
+                  <i class="fa fa-caret-left" aria-hidden="true"></i>
+                  <span>{{'paging.previous-page' | translate}}</span>
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-arrow" [disabled]="!hasNextPage()"
+                        (click)="nextPage()">
+                  <span>{{'paging.next-page' | translate}}</span>
+                  <i class="fa fa-caret-right" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+</div>

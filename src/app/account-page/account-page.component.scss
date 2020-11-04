@@ -1,0 +1,11 @@
+.account-state {
+  &.uninit {
+    color: #6c757d;
+  }
+  &.active {
+    color: #28a745;
+  }
+  &.frozen {
+    color: #dc3545;
+  }
+}

@@ -1,0 +1,96 @@
+<section class="table-section" *ngIf="messages">
+  <div class="larg-container">
+    <h2 class="table-section__title" *ngIf="showHeader">
+      {{'common.Messages' | translate}}
+      <span class="badge badge-secondary badge-pill">{{count | numberWithSpaces}}{{'common.after-count' | translate}}</span>
+    </h2>
+    <div class="tablewrap">
+      <label for="showElectorMessages" class="cursor-pointer mb-3" *ngIf="!account">
+        <input type="checkbox" id="showElectorMessages" [(ngModel)]="showElectorMessages" (change)="loadData(true)">&nbsp;<!--
+          -->{{'messages.show-elector-messages' | translate}}
+      </label>
+      <div role="alert"
+           *ngIf="newCount && newCount > 0"
+           class="has-new alert alert-primary"
+           (click)="loadData(true)"
+           [translate]="'messages.new-items-found'" [translateParams]="{newCount: newCount}"></div>
+      <table class="table table-sm cust-table cust-table--border">
+        <thead>
+        <tr>
+          <th scope="col">{{'messages.body-hash' | translate}}</th>
+          <th scope="col">{{'transaction-messages.sender' | translate}}</th>
+          <th scope="col">{{'transaction-messages.recipient' | translate}}</th>
+          <th scope="col">{{'messages.value' | translate}}&nbsp;({{'common.TON' | translate}})</th>
+          <th scope="col">{{'message-page.message-type' | translate}}</th>
+          <th scope="col">{{'common.Transaction.1' | translate}}</th>
+          <th scope="col">{{'messages.date-n-time' | translate}}</th>
+        </tr>
+        </thead>
+        <tbody [class.loading]="loading">
+
+        <tr *ngFor="let message of messages">
+          <td>
+            <a class="like-link" [routerLink]="'/transactions/' + message.transactionHash + '/' + (message.out ? '/out/' + message.n : '/in')" [title]="message.bodyHash">
+              {{message.bodyHash | hash : 9}}
+            </a>
+          </td>
+          <td>
+            <ng-container *ngIf="message.srcAddress">
+              <a class="like-link"
+                 [routerLink]="'/accounts/' + message.srcWorkchain + ':' + message.srcAddress"
+                 [title]="message.srcWorkchain + ':' + message.srcAddress | hash">
+                <app-account-square [address]="message.srcAddress"></app-account-square>
+                {{message.srcWorkchain}}:{{message.srcAddress | hash : 3}}
+              </a>
+            </ng-container>
+            <ng-container *ngIf="!message.srcAddress">
+              &mdash;
+            </ng-container>
+          </td>
+          <td>
+            <ng-container *ngIf="message.dstAddress">
+              <a class="like-link"
+                 [routerLink]="'/accounts/' + message.dstWorkchain + ':' + message.dstAddress"
+                 [title]="message.dstWorkchain + ':' + message.dstAddress | hash">
+                <app-account-square [address]="message.dstAddress"></app-account-square>
+                {{message.dstWorkchain}}:{{message.dstAddress | hash : 3}}
+              </a>
+            </ng-container>
+            <ng-container *ngIf="!message.dstAddress">
+              &mdash;
+            </ng-container>
+          </td>
+          <td><span [ngClass]="{'zero': message.value == null}" [innerHTML]="message.value != null ? (message.value | amount) : '-'"></span></td>
+          <td>{{'message-type.' + message.messageType | translate}}</td>
+          <td><a class="like-link" [routerLink]="'/transactions/' + message.transactionHash" [title]="message.transactionHash | hash">{{message.transactionHash | hash : 3}}</a>
+          <td>{{(message.transactionTime | time) | async}}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-between tabfooter table-section__footer">
+      <button type="button" class="btn btn-outline-primary" (click)="exportCsv()">
+        {{'common.Export-to-csv' | translate}}
+      </button>
+      <div class="d-flex justify-content-between table-section__bar">
+        <div class="table-section__bar-title">{{'paging.page-size' | translate}}</div>
+        <select class="custom-select" [(ngModel)]="pageSize" (change)="changePageSize()">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+        <button type="button" class="btn btn-outline-primary btn-arrow" [disabled]="page <= 1" (click)="prevPage()">
+          <i class="fa fa-caret-left" aria-hidden="true"></i>
+          <span>{{'paging.previous-page' | translate}}</span>
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-arrow" [disabled]="!hasNextPage()" (click)="nextPage()">
+          <span>{{'paging.next-page' | translate}}</span>
+          <i class="fa fa-caret-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

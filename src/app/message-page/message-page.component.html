@@ -1,0 +1,160 @@
+<div class="wrapper" *ngIf="transaction && !error">
+  <app-header></app-header>
+  <main class="main">
+    <section class="border-bottom search-header">
+      <div class="d-flex justify-content-between search-sec-form search-sec-form--long">
+        <app-search-field></app-search-field>
+      </div>
+    </section>
+    <div class="page">
+      <div class="page__top">
+        <div class="larg-container">
+          <nav class="page-breadcrumbs">
+            <a routerLink="/" [innerHTML]="'breadcrumbs.main-page' | translate"></a>
+            <i class="fa fa-caret-right" aria-hidden="true"></i>
+            <a routerLink="/transactions" [innerHTML]="'breadcrumbs.transaction-list' | translate"></a>
+            <i class="fa fa-caret-right" aria-hidden="true"></i>
+            <a [routerLink]="'/transactions/' + transaction.hash">
+              {{'common.Transaction.1' | translate}} {{transaction.hash | hash : 5}}
+            </a>
+            <i class="fa fa-caret-right" aria-hidden="true"></i>
+            <span *ngIf="out == 'in'">{{'message-page.incoming-message' | translate}}</span>
+            <span *ngIf="out == 'out'">{{'message-page.outgoing-message' | translate}} #{{n}}</span>
+          </nav>
+          <h1 class="page-title">
+            {{'common.Message.1' | translate}} {{message.hash | hash : 5}}
+          </h1>
+        </div>
+      </div>
+      <div class="page__main">
+
+        <section class="table-section">
+          <div class="larg-container">
+            <h2 class="table-section__title" #main>{{'message-page.main-details' | translate}}</h2>
+
+            <dl class="row info-list">
+              <dt class="col-6 col-md-3">{{'message-page.body-hash' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                {{message.hash | hash}}
+                <button type="button" class="btn btn-outline-primary btn-copy"
+                        ngxClipboard [cbContent]="message.hash | hash">
+                  <i class="fa fa-copy" aria-hidden="true"></i>
+                </button>
+              </dd>
+              <dt class="col-6 col-md-3">{{'message-page.message-type' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                {{'message-type.' + message.info.kind | translate}}
+              </dd>
+              <dt class="col-6 col-md-3">{{'common.Date-and-Time' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                {{(message.info.createdAt || transaction.now | time) | async}}
+              </dd>
+              <ng-container *ngIf="message.info.src">
+                <dt class="col-6 col-md-3">{{'common.address.From' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <a [routerLink]="'/accounts/' + message.info.src.workchain + ':' + message.info.src.address">
+                    <app-account-square [address]="message.info.src.address"></app-account-square>
+                    {{message.info.src.workchain}}:{{message.info.src.address.toLowerCase()}}
+                  </a>
+                </dd>
+              </ng-container>
+              <ng-container *ngIf="message.info.dest">
+                <dt class="col-6 col-md-3">{{'common.address.To' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <a [routerLink]="'/accounts/' + message.info.dest.workchain + ':' + message.info.dest.address">
+                    <app-account-square [address]="message.info.dest.address"></app-account-square>
+                    {{message.info.dest.workchain}}:{{message.info.dest.address.toLowerCase()}}
+                  </a>
+                </dd>
+              </ng-container>
+              <dt class="col-6 col-md-3">{{'message-page.value' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <span [innerHTML]="message.info.value | amount"></span> {{'common.TON' | translate}}
+              </dd>
+
+              <ng-container *ngIf="parentTransaction">
+                <dt class="col-6 col-md-3">{{'message-page.parent-transaction' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <a [routerLink]="'/transactions/' + parentTransaction.hash">
+                    {{parentTransaction.hash | hash}}
+                  </a>
+                </dd>
+              </ng-container>
+
+              <ng-container *ngIf="childTransaction">
+                <dt class="col-6 col-md-3">{{'message-page.child-transaction' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <a [routerLink]="'/transactions/' + childTransaction.hash">
+                    {{childTransaction.hash | hash}}
+                  </a>
+                </dd>
+              </ng-container>
+            </dl>
+
+            <span *ngIf="message.info"
+                  class="more-btn cursor-pointer noselect"
+                  [class.open]="additionalInfoOpen"
+                  (click)="additionalInfoOpen = !additionalInfoOpen">
+              {{'transaction-page.more-information' | translate}}
+              <i class="fa fa fa-caret-down" aria-hidden="true"></i>
+            </span>
+
+            <dl class="row info-list" *ngIf="additionalInfoOpen">
+              <ng-container *ngIf="isDefined(message.info.createdLt)">
+                <dt class="col-6 col-md-3">{{'message-page.created-logical-time' | translate}}</dt>
+                <dd class="col-6 col-md-9">{{message.info.createdLt}}</dd>
+              </ng-container>
+
+              <ng-container *ngIf="isDefined(message.info.createdAt)">
+                <dt class="col-6 col-md-3">{{'message-page.created-at' | translate}}</dt>
+                <dd class="col-6 col-md-9">{{message.info.createdAt}}</dd>
+              </ng-container>
+
+              <ng-container *ngIf="isDefined(message.info.ihrFee)">
+                <dt class="col-6 col-md-3">{{'message-page.ihr-fee' | translate}}</dt>
+                <dd class="col-6 col-md-9"><span [innerHTML]="message.info.ihrFee | amount"></span></dd>
+              </ng-container>
+
+              <ng-container *ngIf="isDefined(message.info.fwdFee)">
+                <dt class="col-6 col-md-3">{{'message-page.forward-fee' | translate}}</dt>
+                <dd class="col-6 col-md-9"><span [innerHTML]="message.info.fwdFee | amount"></span></dd>
+              </ng-container>
+
+              <ng-container *ngIf="isDefined(message.info.importFee)">
+                <dt class="col-6 col-md-3">{{'message-page.import-fee' | translate}}</dt>
+                <dd class="col-6 col-md-9"><span [innerHTML]="message.info.importFee | amount"></span></dd>
+              </ng-container>
+
+              <ng-container *ngIf="isDefined(message.info.bounce)">
+                <dt class="col-6 col-md-3">{{'message-page.bounce' | translate}}</dt>
+                <dd class="col-6 col-md-9">{{'common.YesNo.' + message.info.bounce | translate}}</dd>
+              </ng-container>
+
+              <ng-container *ngIf="isDefined(message.info.bounced)">
+                <dt class="col-6 col-md-3">{{'message-page.bounced' | translate}}</dt>
+                <dd class="col-6 col-md-9">{{'common.YesNo.' + message.info.bounced | translate}}</dd>
+              </ng-container>
+
+              <ng-container *ngIf="isDefined(message.body)">
+                <dt class="col-6 col-md-3">{{'message-page.body' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <button type="button" class="btn btn-outline-secondary btn-download m-0"  (click)="downloadBody()">
+                    {{'common.Download' | translate}}&nbsp;<i class="fa fa-download"></i>
+                  </button>
+                  <button type="button" class="btn btn-outline-primary btn-copy"
+                          ngxClipboard [cbContent]="message.body">
+                    <i class="fa fa-copy" aria-hidden="true"></i>
+                  </button>
+                </dd>
+              </ng-container>
+            </dl>
+
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+<ng-container *ngIf="error === 404">
+  <h1>404</h1>
+</ng-container>

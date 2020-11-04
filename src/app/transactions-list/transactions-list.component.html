@@ -1,0 +1,56 @@
+<div class="wrapper">
+  <app-header></app-header>
+  <main class="main">
+    <section class="border-bottom search-header">
+      <div class="d-flex justify-content-between search-sec-form search-sec-form--long">
+        <app-search-field></app-search-field>
+      </div>
+    </section>
+    <div class="page">
+      <div class="page__top noselect">
+        <div class="larg-container">
+          <nav class="page-breadcrumbs">
+            <a routerLink="/">{{'breadcrumbs.main-page' | translate}}</a>
+            <i class="fa fa-caret-right" aria-hidden="true"></i>
+            <span>{{'common.Transactions' | translate}}</span>
+          </nav>
+          <h1 class="page-title">{{'common.Transactions' | translate}}</h1>
+        </div>
+      </div>
+
+      <div class="border-bottom section counters">
+        <div class="larg-container">
+          <ul class="d-flex justify-content-between counters__wrap">
+            <li class="counters__item counters__item--4">
+              <span *ngIf="currentLang === 'ko'">{{'common.Transactions' | translate}}</span>
+              <b *ngIf="stats">{{stats.counts.TOTAL.transactions | numberWithSpaces}}{{'common.after-count' | translate}}</b>
+              <b *ngIf="!stats" class="noselect">--</b>
+              <span *ngIf="currentLang === 'en'">{{'common.Transactions' | translate}}</span>
+            </li>
+            <li class="counters__item counters__item--4">
+              <span *ngIf="currentLang === 'ko'">{{'common.Per-second' | translate}}</span>
+              <b *ngIf="tps">{{tps}}{{'common.after-count' | translate}}</b>
+              <b *ngIf="!tps" class="noselect">--</b>
+              <span *ngIf="currentLang === 'en'">{{'common.Per-second' | translate}}</span>
+            </li>
+            <li class="counters__item counters__item--4">
+              <span *ngIf="currentLang === 'ko'">{{'common.In-last-24-hours' | translate}}</span>
+              <b *ngIf="stats">{{stats.counts.D1.transactions | numberWithSpaces}}{{'common.after-count' | translate}}</b>
+              <b *ngIf="!stats" class="noselect">--</b>
+              <span *ngIf="currentLang === 'en'">{{'common.In-last-24-hours' | translate}}</span>
+            </li>
+            <li class="counters__item counters__item--4">
+              <span *ngIf="currentLang === 'ko'">{{'common.Volume-24h' | translate}}</span>
+              <b *ngIf="volume24">{{volume24 | numberWithSpaces}}&nbsp;{{'common.TON' | translate}}</b>
+              <b *ngIf="!volume24" class="noselect">--</b>
+              <span *ngIf="currentLang === 'en'">{{'common.Volume-24h' | translate}}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="page__main">
+        <app-transactions pageSize="20"></app-transactions>
+      </div>
+    </div>
+  </main>
+</div>

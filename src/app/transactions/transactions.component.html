@@ -1,0 +1,101 @@
+<section class="table-section" *ngIf="transactions">
+  <div class="larg-container">
+    <h2 class="table-section__title" *ngIf="showHeader">
+      {{'common.Transactions' | translate}}
+      <span class="badge badge-secondary badge-pill">{{count | numberWithSpaces}}{{'common.after-count' | translate}}</span>
+    </h2>
+    <div class="tablewrap">
+      <label for="showElectorTransactions" class="cursor-pointer mb-3" *ngIf="!account">
+        <input type="checkbox" id="showElectorTransactions" [(ngModel)]="showElectorTransactions" (change)="loadData(true)">&nbsp;<!--
+          -->{{'transactions.show-elector-transactions' | translate}}
+      </label> &nbsp;
+      <label for="showTickTock" class="cursor-pointer mb-3" *ngIf="!account">
+        <input type="checkbox" id="showTickTock" [(ngModel)]="showTickTock" (change)="loadData(true)">&nbsp;<!--
+          -->{{'transactions.show-tick-tock' | translate}}
+      </label>
+      <div role="alert"
+           *ngIf="newCount && newCount > 0"
+           class="has-new alert alert-primary"
+           (click)="loadData(true)"
+           [translate]="'transactions.new-items-found'" [translateParams]="{newCount: newCount}"></div>
+      <table class="table table-sm cust-table cust-table--border">
+        <thead>
+        <tr>
+<!--          <th scope="col" *ngIf="!account">{{'common.Workchain' | translate}}</th>-->
+          <th scope="col">{{'common.ID' | translate}}</th>
+          <th scope="col">{{'transactions.transaction-type' | translate}}</th>
+          <th scope="col">{{'transactions.balance-change' | translate}}&nbsp;({{'common.TON' | translate}})</th>
+          <th scope="col">{{'transactions.date-n-time' | translate}}</th>
+          <th scope="col" *ngIf="!account">{{'common.Account.1' | translate}}</th>
+        </tr>
+        </thead>
+        <tbody [class.loading]="loading">
+        <tr *ngFor="let transaction of transactions; let i = index">
+<!--          <td *ngIf="!account">{{transaction.workchain}}</td>-->
+          <td>
+            <a class="like-link" [routerLink]="'/transactions/' + transaction.hash"
+               [title]="transaction.hash | hash">
+              {{transaction.hash | hash: 10}}
+            </a>
+          </td>
+          <td>
+            <ng-container *ngIf="transaction.transactionType === 'tick_tok'">
+              <span class="color-gray-400">{{'transaction-type.' + transaction.transactionType + '.' + transaction.isTock | translate}}</span>
+            </ng-container>
+            <ng-container *ngIf="transaction.transactionType !== 'tick_tok'">
+              {{'transaction-type.' + transaction.transactionType | translate}}
+            </ng-container>
+          </td>
+          <td>
+            <ng-container *ngIf="transaction.balanceChange">
+              <span *ngIf="transaction.balanceChange && transaction.balanceChange > 0">+</span><!--
+                --><span [innerHTML]="transaction.balanceChange | amount"></span>
+            </ng-container>
+          </td>
+          <td>{{(transaction.time | time) | async}}</td>
+          <td  *ngIf="!account">
+            <ng-container *ngIf="namedAddresses.indexOf(transaction.accountId) !== -1">
+              <app-account-square [address]="transaction.accountId"></app-account-square>
+              <a class="like-link"  [routerLink]="'/accounts/' + transaction.workchain + ':' + transaction.accountId"
+                 [title]="transaction.workchain + ':' + transaction.accountId | hash">
+                {{'named-address.' + transaction.accountId | translate}}
+              </a>
+            </ng-container>
+            <ng-container *ngIf="namedAddresses.indexOf(transaction.accountId) === -1">
+              <app-account-square [address]="transaction.accountId"></app-account-square>
+              <a class="like-link" [routerLink]="'/accounts/' + transaction.workchain + ':' + transaction.accountId"
+                 [title]="transaction.workchain + ':' + transaction.accountId | hash">
+                {{transaction.accountId | address: 5 : transaction.workchain}}
+              </a>
+            </ng-container>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-between tabfooter table-section__footer">
+      <button type="button" class="btn btn-outline-primary" (click)="exportCsv()">
+        {{'common.Export-to-csv' | translate}}
+      </button>
+      <div class="d-flex justify-content-between table-section__bar">
+        <div class="table-section__bar-title">{{'paging.page-size' | translate}}</div>
+        <select class="custom-select" [(ngModel)]="pageSize" (change)="changePageSize()">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+        <button type="button" class="btn btn-outline-primary btn-arrow" [disabled]="page <= 1" (click)="prevPage()">
+          <i class="fa fa-caret-left" aria-hidden="true"></i>
+          <span>{{'paging.previous-page' | translate}}</span>
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-arrow" [disabled]="!hasNextPage()" (click)="nextPage()">
+          <span>{{'paging.next-page' | translate}}</span>
+          <i class="fa fa-caret-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

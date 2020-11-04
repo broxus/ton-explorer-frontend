@@ -1,0 +1,2393 @@
+openapi: 3.0.1
+info:
+  title: The blockchain explorer backend
+  version: '1.0'
+paths:
+  /api/get-time:
+    get:
+      operationId: getApiGet-time
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTimeResponse'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/stats:
+    get:
+      operationId: getApiStats
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockchainStats'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/search:
+    post:
+      operationId: postApiSearch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/auth-info:
+    get:
+      operationId: getApiAuth-info
+      parameters:
+        - name: session
+          in: cookie
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthInfo'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/account:
+    post:
+      operationId: postApiAccount
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/account/transactions:
+    post:
+      operationId: postApiAccountTransactions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountTransactionsRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/account/list:
+    post:
+      operationId: postApiAccountList
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountsRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountListItem'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/transaction:
+    post:
+      operationId: postApiTransaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/transaction/list:
+    post:
+      operationId: postApiTransactionList
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionsRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransactionListItem'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/transaction/count:
+    post:
+      operationId: postApiTransactionCount
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionsCountRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountResponse'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/message:
+    post:
+      operationId: postApiMessage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LimitedIdRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/message/list:
+    post:
+      operationId: postApiMessageList
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessagesRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MessageListItem'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/message/count:
+    post:
+      operationId: postApiMessageCount
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessagesCountRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountResponse'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/search/message:
+    post:
+      operationId: postApiSearchMessage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SearchResponseMessageItem'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/block:
+    post:
+      operationId: postApiBlock
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Block'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/block/by-seqno:
+    post:
+      operationId: postApiBlockBy-seqno
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlockRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Block'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/block/latest:
+    post:
+      operationId: postApiBlockLatest
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Block'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/block/zerostate:
+    post:
+      operationId: postApiBlockZerostate
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockState'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/block/list:
+    post:
+      operationId: postApiBlockList
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlocksRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BlockListItem'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/stake-transaction/list:
+    post:
+      operationId: postApiStake-transactionList
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StakeTransactionListRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StakeTransactionListItem'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/stake-transaction/election-stakes:
+    post:
+      operationId: postApiStake-transactionElection-stakes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ElectionStakesRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StakeTransactionListItem'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/stake-transactions/total-stakes:
+    post:
+      operationId: postApiStake-transactionsTotal-stakes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TotalStakesRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TotalStakeListItem'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/stake-transaction/count:
+    post:
+      operationId: postApiStake-transactionCount
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StakeTransactionCountRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountResponse'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/validator/get-accounts:
+    post:
+      operationId: postApiValidatorGet-accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidatorAccountsRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidatorAccountsResponse'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/election-dates-list:
+    post:
+      operationId: postApiElection-dates-list
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ElectionDatesRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/validators/past-elections:
+    get:
+      operationId: getApiValidatorsPast-elections
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PastElectionListItem'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/validators/state:
+    get:
+      operationId: getApiValidatorsState
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidatorsState'
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+components:
+  schemas:
+    ApiError:
+      required:
+        - message
+      type: object
+      properties:
+        message:
+          type: string
+    GetTimeResponse:
+      required:
+        - node
+        - apiServer
+      type: object
+      properties:
+        node:
+          type: integer
+        apiServer:
+          type: integer
+    BlockchainStats:
+      required:
+        - totalSupply
+        - volume24
+        - maxSeqno
+        - counts
+      type: object
+      properties:
+        totalSupply:
+          type: string
+        volume24:
+          type: string
+        maxSeqno:
+          type: integer
+        counts:
+          $ref: '#/components/schemas/Map_BlockchainStatsCounts'
+    Map_BlockchainStatsCounts:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/BlockchainStatsCounts'
+    BlockchainStatsCounts:
+      required:
+        - time
+        - accountsCreated
+        - accountsActive
+        - transactions
+        - messages
+      type: object
+      properties:
+        time:
+          type: integer
+        accountsCreated:
+          type: integer
+          format: int64
+        accountsActive:
+          type: integer
+          format: int64
+        transactions:
+          type: integer
+          format: int64
+        messages:
+          type: integer
+          format: int64
+    SearchRequest:
+      required:
+        - query
+      type: object
+      properties:
+        query:
+          type: string
+    SearchResponse:
+      type: object
+      properties:
+        blocks:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlockListItem'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchResponseMessageItem'
+        transaction:
+          $ref: '#/components/schemas/TransactionListItem'
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Account'
+        validator:
+          $ref: '#/components/schemas/AccountId'
+    BlockListItem:
+      required:
+        - workchain
+        - shard
+        - seqno
+        - roothash
+        - filehash
+        - keyBlock
+        - time
+        - transactionsCount
+      type: object
+      properties:
+        workchain:
+          type: integer
+        shard:
+          type: string
+        seqno:
+          type: integer
+        roothash:
+          type: string
+        filehash:
+          type: string
+        keyBlock:
+          type: boolean
+        time:
+          type: integer
+        transactionsCount:
+          type: integer
+    SearchResponseMessageItem:
+      required:
+        - block
+        - transaction
+        - message
+      type: object
+      properties:
+        block:
+          $ref: '#/components/schemas/BlockListItem'
+        transaction:
+          $ref: '#/components/schemas/TransactionListItem'
+        message:
+          $ref: '#/components/schemas/MessageListItem'
+    TransactionListItem:
+      required:
+        - workchain
+        - accountId
+        - hash
+        - lt
+        - blockShard
+        - blockSeqno
+        - transactionType
+        - balanceChange
+        - time
+        - totalFees
+      type: object
+      properties:
+        workchain:
+          type: integer
+        accountId:
+          type: string
+        hash:
+          type: string
+        lt:
+          type: string
+        blockShard:
+          type: string
+        blockSeqno:
+          type: integer
+        transactionType:
+          type: string
+        balanceChange:
+          type: string
+        time:
+          type: integer
+        totalFees:
+          type: string
+        storageFeesCollected:
+          type: string
+        storageFeesDue:
+          type: string
+        dueFeesCollected:
+          type: string
+        gasFees:
+          type: string
+        totalFwdFees:
+          type: string
+        totalActionFees:
+          type: string
+        reqFwdFees:
+          type: string
+        msgFees:
+          type: string
+        fwdFees:
+          type: string
+        aborted:
+          type: boolean
+        destroyed:
+          type: boolean
+        creditFirst:
+          type: boolean
+        isTock:
+          type: boolean
+    MessageListItem:
+      required:
+        - bodyHash
+        - out
+        - n
+        - transactionWorkchain
+        - transactionAccountId
+        - transactionHash
+        - transactionLt
+        - messageType
+        - transactionTime
+      type: object
+      properties:
+        bodyHash:
+          type: string
+        out:
+          type: boolean
+        n:
+          type: integer
+        transactionWorkchain:
+          type: integer
+        transactionAccountId:
+          type: string
+        transactionHash:
+          type: string
+        transactionLt:
+          type: string
+        messageType:
+          type: string
+        transactionTime:
+          type: integer
+        value:
+          type: string
+        ihrFee:
+          type: string
+        fwdFee:
+          type: string
+        importFee:
+          type: string
+        srcWorkchain:
+          type: integer
+        srcAddress:
+          type: string
+        dstWorkchain:
+          type: integer
+        dstAddress:
+          type: string
+        bounce:
+          type: boolean
+        bounced:
+          type: boolean
+        createdLt:
+          type: string
+        createdAt:
+          type: integer
+    Account:
+      required:
+        - workchain
+        - addressHex
+        - addressBase64Bounceable
+        - addressBase64NonBounceable
+        - storageStat
+        - lastTransactionId
+        - state
+      type: object
+      properties:
+        workchain:
+          type: integer
+        addressHex:
+          type: string
+        addressBase64Bounceable:
+          type: string
+        addressBase64NonBounceable:
+          type: string
+        storageStat:
+          $ref: '#/components/schemas/StorageInfo'
+        balance:
+          $ref: '#/components/schemas/CurrencyCollection'
+        lastTransactionId:
+          $ref: '#/components/schemas/InternalTransactionId'
+        state:
+          $ref: '#/components/schemas/AccountState'
+    StorageInfo:
+      required:
+        - storageUsed
+        - lastPaid
+      type: object
+      properties:
+        storageUsed:
+          $ref: '#/components/schemas/StorageUsed'
+        lastPaid:
+          type: integer
+        duePayment:
+          type: string
+    StorageUsed:
+      required:
+        - cells
+        - bits
+      type: object
+      properties:
+        cells:
+          type: string
+        bits:
+          type: string
+        publicCells:
+          type: string
+    CurrencyCollection:
+      required:
+        - grams
+      type: object
+      properties:
+        grams:
+          type: string
+        other:
+          type: array
+          items:
+            type: string
+    InternalTransactionId:
+      required:
+        - lt
+        - hash
+      type: object
+      properties:
+        lt:
+          type: string
+        hash:
+          type: string
+    AccountState:
+      required:
+        - kind
+        - library
+      type: object
+      properties:
+        kind:
+          type: string
+        splitDepth:
+          type: integer
+        special:
+          $ref: '#/components/schemas/TickTock'
+        code:
+          type: string
+        data:
+          type: string
+        library:
+          $ref: '#/components/schemas/Map_SimpleLib'
+        stateHash:
+          type: string
+    TickTock:
+      required:
+        - tick
+        - tock
+      type: object
+      properties:
+        tick:
+          type: boolean
+        tock:
+          type: boolean
+    Map_SimpleLib:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/SimpleLib'
+    SimpleLib:
+      required:
+        - isPublic
+        - data
+      type: object
+      properties:
+        isPublic:
+          type: boolean
+        data:
+          type: string
+    AccountId:
+      required:
+        - workchain
+        - address
+      type: object
+      properties:
+        workchain:
+          type: integer
+        address:
+          type: string
+    AuthInfo:
+      required:
+        - auth
+      type: object
+      properties:
+        auth:
+          type: boolean
+        user:
+          $ref: '#/components/schemas/UserInfo'
+    UserInfo:
+      required:
+        - id
+        - firstName
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        firstName:
+          type: string
+        lastName:
+          type: string
+        username:
+          type: string
+        photoUrl:
+          type: string
+    IdRequest:
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: string
+    AccountTransactionsRequest:
+      required:
+        - account
+        - count
+      type: object
+      properties:
+        account:
+          type: string
+        count:
+          type: integer
+        from:
+          $ref: '#/components/schemas/InternalTransactionId'
+    Transaction:
+      required:
+        - workchain
+        - account
+        - hash
+        - lt
+        - prevTransHash
+        - prevTransLt
+        - now
+        - outMessageCount
+        - originalStatus
+        - endStatus
+        - totalFees
+        - hashUpdate
+        - description
+      type: object
+      properties:
+        workchain:
+          type: integer
+        account:
+          type: string
+        hash:
+          type: string
+        lt:
+          type: string
+        prevTransHash:
+          type: string
+        prevTransLt:
+          type: string
+        now:
+          type: integer
+        outMessageCount:
+          type: integer
+        originalStatus:
+          type: string
+        endStatus:
+          type: string
+        totalFees:
+          type: string
+        hashUpdate:
+          $ref: '#/components/schemas/HashUpdate'
+        messageIn:
+          $ref: '#/components/schemas/Message'
+        messagesOut:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+        description:
+          $ref: '#/components/schemas/TransactionDescription'
+        blockId:
+          $ref: '#/components/schemas/BlockIdExt'
+    HashUpdate:
+      required:
+        - oldHash
+        - newHash
+      type: object
+      properties:
+        oldHash:
+          type: string
+        newHash:
+          type: string
+    Message:
+      required:
+        - hash
+        - info
+      type: object
+      properties:
+        hash:
+          type: string
+        info:
+          $ref: '#/components/schemas/MessageInfo'
+        init:
+          type: string
+        body:
+          type: string
+    MessageInfo:
+      required:
+        - kind
+      type: object
+      properties:
+        kind:
+          type: string
+        src:
+          $ref: '#/components/schemas/MessageAddress'
+        dest:
+          $ref: '#/components/schemas/MessageAddress'
+        ihrDisabled:
+          type: boolean
+        bounce:
+          type: boolean
+        bounced:
+          type: boolean
+        value:
+          type: string
+        ihrFee:
+          type: string
+        fwdFee:
+          type: string
+        importFee:
+          type: string
+        createdLt:
+          type: string
+        createdAt:
+          type: integer
+    MessageAddress:
+      required:
+        - workchain
+        - address
+      type: object
+      properties:
+        anycast:
+          $ref: '#/components/schemas/MessageAnycast'
+        workchain:
+          type: integer
+        addressLength:
+          type: integer
+        address:
+          type: string
+    MessageAnycast:
+      required:
+        - depth
+        - rewritePfx
+      type: object
+      properties:
+        depth:
+          type: integer
+        rewritePfx:
+          type: string
+    TransactionDescription:
+      required:
+        - kind
+      type: object
+      properties:
+        kind:
+          type: string
+        storagePhase:
+          $ref: '#/components/schemas/TransactionStoragePhase'
+        creditPhase:
+          $ref: '#/components/schemas/TransactionCreditPhase'
+        computePhase:
+          $ref: '#/components/schemas/TransactionComputePhase'
+        action:
+          $ref: '#/components/schemas/TransactionActionPhase'
+        bounce:
+          $ref: '#/components/schemas/TransactionBouncePhase'
+        creditFirst:
+          type: boolean
+        isTock:
+          type: boolean
+        installed:
+          type: boolean
+        aborted:
+          type: boolean
+        destroyed:
+          type: boolean
+        additionalInfo:
+          $ref: '#/components/schemas/TransactionAdditionalInfo'
+    TransactionStoragePhase:
+      required:
+        - storageFeesCollected
+        - statusChange
+      type: object
+      properties:
+        storageFeesCollected:
+          type: string
+        storageFeesDue:
+          type: string
+        statusChange:
+          type: string
+    TransactionCreditPhase:
+      required:
+        - credit
+      type: object
+      properties:
+        dueFeesCollected:
+          type: string
+        credit:
+          $ref: '#/components/schemas/CurrencyCollection'
+    TransactionComputePhase:
+      required:
+        - kind
+      type: object
+      properties:
+        kind:
+          type: string
+        reason:
+          type: integer
+        success:
+          type: boolean
+        msgStateUsed:
+          type: boolean
+        accountActivated:
+          type: boolean
+        gasFees:
+          type: string
+        gasUsed:
+          type: string
+        gasLimit:
+          type: string
+        gasCredit:
+          type: string
+        mode:
+          type: integer
+        exitCode:
+          type: integer
+        exitArg:
+          type: integer
+        vmSteps:
+          type: integer
+        vmInitStateHash:
+          type: string
+        vmFinalStateHash:
+          type: string
+    TransactionActionPhase:
+      required:
+        - success
+        - valid
+        - noFunds
+        - statusChange
+        - resultCode
+        - totalActions
+        - specialActions
+        - skippedActions
+        - messagesCreated
+        - actionListHash
+        - totalMsgSize
+      type: object
+      properties:
+        success:
+          type: boolean
+        valid:
+          type: boolean
+        noFunds:
+          type: boolean
+        statusChange:
+          type: string
+        totalFwdFees:
+          type: string
+        totalActionFees:
+          type: string
+        resultCode:
+          type: integer
+        resultArg:
+          type: integer
+        totalActions:
+          type: integer
+        specialActions:
+          type: integer
+        skippedActions:
+          type: integer
+        messagesCreated:
+          type: integer
+        actionListHash:
+          type: string
+        totalMsgSize:
+          $ref: '#/components/schemas/StorageUsed'
+    TransactionBouncePhase:
+      required:
+        - kind
+      type: object
+      properties:
+        kind:
+          type: string
+        msgSize:
+          $ref: '#/components/schemas/StorageUsed'
+        reqFwdFees:
+          type: string
+        msgFees:
+          type: string
+        fwdFees:
+          type: string
+    TransactionAdditionalInfo:
+      required:
+        - kind
+        - success
+      type: object
+      properties:
+        kind:
+          type: string
+        success:
+          type: boolean
+        status:
+          type: integer
+        pubkey:
+          type: string
+        electionTime:
+          type: integer
+        maxFactor:
+          type: integer
+        adnlAddr:
+          type: string
+    BlockIdExt:
+      required:
+        - workchain
+        - shard
+        - seqno
+        - rootHash
+        - fileHash
+      type: object
+      properties:
+        workchain:
+          type: integer
+        shard:
+          type: string
+        seqno:
+          type: integer
+        rootHash:
+          type: string
+        fileHash:
+          type: string
+    AccountsRequest:
+      required:
+        - limit
+        - offset
+        - orderColumn
+        - asc
+      type: object
+      properties:
+        limit:
+          type: integer
+        offset:
+          type: integer
+          format: int64
+        orderColumn:
+          type: string
+        asc:
+          type: boolean
+        fromTs:
+          type: integer
+        toTs:
+          type: integer
+    AccountListItem:
+      required:
+        - workchain
+        - address
+        - balance
+        - created
+        - updated
+      type: object
+      properties:
+        workchain:
+          type: integer
+        address:
+          type: string
+        balance:
+          type: string
+        created:
+          type: integer
+        updated:
+          type: integer
+    TransactionsRequest:
+      required:
+        - limit
+        - offset
+      type: object
+      properties:
+        limit:
+          type: integer
+        offset:
+          type: integer
+          format: int64
+        fromTs:
+          type: integer
+        toTs:
+          type: integer
+        account:
+          $ref: '#/components/schemas/AccountId'
+        excludeAccounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountId'
+        transactionTypes:
+          type: array
+          items:
+            type: string
+    TransactionsCountRequest:
+      type: object
+      properties:
+        fromTs:
+          type: integer
+        toTs:
+          type: integer
+        account:
+          $ref: '#/components/schemas/AccountId'
+        excludeAccounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountId'
+        transactionTypes:
+          type: array
+          items:
+            type: string
+    CountResponse:
+      required:
+        - count
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int64
+    LimitedIdRequest:
+      required:
+        - id
+        - limit
+      type: object
+      properties:
+        id:
+          type: string
+        limit:
+          type: integer
+    MessagesRequest:
+      required:
+        - limit
+        - offset
+      type: object
+      properties:
+        limit:
+          type: integer
+        offset:
+          type: integer
+          format: int64
+        fromTs:
+          type: integer
+        toTs:
+          type: integer
+        account:
+          $ref: '#/components/schemas/AccountId'
+        excludeAccounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountId'
+    MessagesCountRequest:
+      type: object
+      properties:
+        fromTs:
+          type: integer
+        toTs:
+          type: integer
+        out:
+          type: boolean
+        account:
+          $ref: '#/components/schemas/AccountId'
+        excludeAccounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountId'
+    Block:
+      required:
+        - id
+        - masterchainId
+        - globalId
+        - info
+        - valueFlow
+        - blockExtra
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/BlockIdExt'
+        masterchainId:
+          $ref: '#/components/schemas/BlockIdExt'
+        globalId:
+          type: integer
+        info:
+          $ref: '#/components/schemas/BlockInfo'
+        valueFlow:
+          $ref: '#/components/schemas/ValueFlow'
+        blockExtra:
+          $ref: '#/components/schemas/BlockExtra'
+        previous:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlockIdExt'
+        next:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlockId'
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+    BlockInfo:
+      required:
+        - version
+        - notMaster
+        - afterMerge
+        - beforeSplit
+        - afterSplit
+        - wantSplit
+        - wantMerge
+        - keyBlock
+        - vertSeqnoIncr
+        - flags
+        - seqno
+        - vertSeqno
+        - genUtime
+        - startLt
+        - endLt
+        - genValidatorListHashShort
+        - genCatchainSeqno
+        - minRefMcSeqno
+        - prevKeyBlockSeqno
+        - genSoftware
+      type: object
+      properties:
+        version:
+          type: integer
+        notMaster:
+          type: boolean
+        afterMerge:
+          type: boolean
+        beforeSplit:
+          type: boolean
+        afterSplit:
+          type: boolean
+        wantSplit:
+          type: boolean
+        wantMerge:
+          type: boolean
+        keyBlock:
+          type: boolean
+        vertSeqnoIncr:
+          type: boolean
+        flags:
+          type: integer
+        seqno:
+          type: integer
+        vertSeqno:
+          type: integer
+        genUtime:
+          type: integer
+        startLt:
+          type: string
+        endLt:
+          type: string
+        genValidatorListHashShort:
+          type: integer
+        genCatchainSeqno:
+          type: integer
+        minRefMcSeqno:
+          type: integer
+        prevKeyBlockSeqno:
+          type: integer
+        genSoftware:
+          $ref: '#/components/schemas/GlobalVersion'
+        masterRef:
+          $ref: '#/components/schemas/ExtBlockRef'
+    GlobalVersion:
+      required:
+        - version
+        - capabilities
+      type: object
+      properties:
+        version:
+          type: integer
+        capabilities:
+          type: string
+    ExtBlockRef:
+      required:
+        - endLt
+        - seqno
+        - rootHash
+        - fileHash
+      type: object
+      properties:
+        endLt:
+          type: string
+        seqno:
+          type: integer
+        rootHash:
+          type: string
+        fileHash:
+          type: string
+    ValueFlow:
+      required:
+        - fromPrevBlk
+        - toNextBlk
+        - imported
+        - exported
+        - feesCollected
+        - feesImported
+        - recovered
+        - created
+        - minted
+      type: object
+      properties:
+        fromPrevBlk:
+          $ref: '#/components/schemas/CurrencyCollection'
+        toNextBlk:
+          $ref: '#/components/schemas/CurrencyCollection'
+        imported:
+          $ref: '#/components/schemas/CurrencyCollection'
+        exported:
+          $ref: '#/components/schemas/CurrencyCollection'
+        feesCollected:
+          $ref: '#/components/schemas/CurrencyCollection'
+        feesImported:
+          $ref: '#/components/schemas/CurrencyCollection'
+        recovered:
+          $ref: '#/components/schemas/CurrencyCollection'
+        created:
+          $ref: '#/components/schemas/CurrencyCollection'
+        minted:
+          $ref: '#/components/schemas/CurrencyCollection'
+    BlockExtra:
+      required:
+        - randSeed
+        - createdBy
+      type: object
+      properties:
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlockExtraAccount'
+        randSeed:
+          type: string
+        createdBy:
+          type: string
+        custom:
+          $ref: '#/components/schemas/McBlockExtra'
+    BlockExtraAccount:
+      required:
+        - addr
+        - transactionCount
+        - stateUpdate
+      type: object
+      properties:
+        addr:
+          type: string
+        transactionCount:
+          type: integer
+        stateUpdate:
+          $ref: '#/components/schemas/HashUpdate'
+    McBlockExtra:
+      required:
+        - isKeyBlock
+        - shardHashes
+      type: object
+      properties:
+        isKeyBlock:
+          type: boolean
+        shardHashes:
+          $ref: '#/components/schemas/AllShardsInfo'
+        config:
+          $ref: '#/components/schemas/BlockchainConfig'
+    AllShardsInfo:
+      required:
+        - minShardGenUtime
+        - maxShardGenUtime
+      type: object
+      properties:
+        minShardGenUtime:
+          type: integer
+        maxShardGenUtime:
+          type: integer
+        shards:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShardHash'
+    ShardHash:
+      required:
+        - workchain
+        - id
+        - topBlockId
+        - startLt
+        - endLt
+        - beforeSplit
+        - beforeMerge
+        - wantSplit
+        - wantMerge
+        - nextCatchainSeqno
+        - nextValidatorShard
+        - minRefMcSeqno
+        - genUtime
+        - feesCollected
+        - fundsCollected
+      type: object
+      properties:
+        workchain:
+          type: integer
+        id:
+          type: string
+        topBlockId:
+          $ref: '#/components/schemas/BlockIdExt'
+        startLt:
+          type: string
+        endLt:
+          type: string
+        beforeSplit:
+          type: boolean
+        beforeMerge:
+          type: boolean
+        wantSplit:
+          type: boolean
+        wantMerge:
+          type: boolean
+        nextCatchainSeqno:
+          type: integer
+        nextValidatorShard:
+          type: string
+        minRefMcSeqno:
+          type: integer
+        genUtime:
+          type: integer
+        feesCollected:
+          type: string
+        fundsCollected:
+          type: string
+    BlockchainConfig:
+      type: object
+      properties:
+        configAddr:
+          type: string
+        electorAddr:
+          type: string
+        minterAddr:
+          type: string
+        feeCollectorAddr:
+          type: string
+        dnsRootAddr:
+          type: string
+        mintPrice:
+          $ref: '#/components/schemas/ConfigMintPrice'
+        toMint:
+          type: array
+          items:
+            type: string
+        globalVersion:
+          $ref: '#/components/schemas/GlobalVersion'
+        mandatoryParams:
+          type: array
+          items:
+            type: integer
+        criticalParams:
+          type: array
+          items:
+            type: integer
+        configVotingSetup:
+          $ref: '#/components/schemas/ConfigVotingSetup'
+        workchains:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConfigWorkchainInfo'
+        complaintPricing:
+          $ref: '#/components/schemas/ConfigComplaintPricing'
+        blockCreateFees:
+          $ref: '#/components/schemas/ConfigBlockCreateFees'
+        validatorsTimings:
+          $ref: '#/components/schemas/ConfigValidatorsTimings'
+        validatorsQuantityLimits:
+          $ref: '#/components/schemas/ConfigValidatorsQuantityLimits'
+        validatorsStakeLimits:
+          $ref: '#/components/schemas/ConfigValidatorsStakeLimits'
+        storagePrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConfigStoragePrice'
+        masterchainGasPrices:
+          $ref: '#/components/schemas/ConfigGasLimitsPrices'
+        basechainGasPrices:
+          $ref: '#/components/schemas/ConfigGasLimitsPrices'
+        masterchainBlockLimits:
+          $ref: '#/components/schemas/ConfigBlockLimits'
+        basechainBlockLimits:
+          $ref: '#/components/schemas/ConfigBlockLimits'
+        masterchainMsgForwardPrices:
+          $ref: '#/components/schemas/ConfigMsgForwardPrices'
+        basechainMsgForwardPrices:
+          $ref: '#/components/schemas/ConfigMsgForwardPrices'
+        catchainConfig:
+          $ref: '#/components/schemas/CatchainConfig'
+        consensusConfig:
+          $ref: '#/components/schemas/ConsensusConfig'
+        fundamentalSmcAddresses:
+          type: array
+          items:
+            type: string
+        prevVset:
+          $ref: '#/components/schemas/ValidatorSet'
+        prevTempVset:
+          $ref: '#/components/schemas/ValidatorSet'
+        currVset:
+          $ref: '#/components/schemas/ValidatorSet'
+        currTempVset:
+          $ref: '#/components/schemas/ValidatorSet'
+        nextVset:
+          $ref: '#/components/schemas/ValidatorSet'
+        nextTempVset:
+          $ref: '#/components/schemas/ValidatorSet'
+    ConfigMintPrice:
+      required:
+        - mintNewPrice
+        - mintAddPrice
+      type: object
+      properties:
+        mintNewPrice:
+          type: string
+        mintAddPrice:
+          type: string
+    ConfigVotingSetup:
+      required:
+        - normalParams
+        - criticalParams
+      type: object
+      properties:
+        normalParams:
+          $ref: '#/components/schemas/ConfigProposalSetup'
+        criticalParams:
+          $ref: '#/components/schemas/ConfigProposalSetup'
+    ConfigProposalSetup:
+      required:
+        - minTotRounds
+        - maxTotRounds
+        - minWinds
+        - maxLosses
+        - minStoreSeq
+        - maxStoreSeq
+        - bitPrice
+        - cellPrice
+      type: object
+      properties:
+        minTotRounds:
+          type: integer
+        maxTotRounds:
+          type: integer
+        minWinds:
+          type: integer
+        maxLosses:
+          type: integer
+        minStoreSeq:
+          type: integer
+        maxStoreSeq:
+          type: integer
+        bitPrice:
+          type: integer
+        cellPrice:
+          type: integer
+    ConfigWorkchainInfo:
+      required:
+        - enabledSince
+        - actualMinSplit
+        - minSplit
+        - maxSplit
+        - basic
+        - active
+        - acceptMsgs
+        - flags
+        - zerostateRootHash
+        - zerostateFileHash
+        - version
+        - format
+      type: object
+      properties:
+        enabledSince:
+          type: integer
+        actualMinSplit:
+          type: integer
+        minSplit:
+          type: integer
+        maxSplit:
+          type: integer
+        basic:
+          type: boolean
+        active:
+          type: boolean
+        acceptMsgs:
+          type: boolean
+        flags:
+          type: integer
+        zerostateRootHash:
+          type: string
+        zerostateFileHash:
+          type: string
+        version:
+          type: integer
+        format:
+          $ref: '#/components/schemas/ConfigWorkchainFormat'
+    ConfigWorkchainFormat:
+      required:
+        - vmVersion
+        - vmMode
+      type: object
+      properties:
+        vmVersion:
+          type: integer
+        vmMode:
+          type: string
+    ConfigComplaintPricing:
+      required:
+        - deposit
+        - bitPrice
+        - cellPrice
+      type: object
+      properties:
+        deposit:
+          type: string
+        bitPrice:
+          type: string
+        cellPrice:
+          type: string
+    ConfigBlockCreateFees:
+      required:
+        - masterchainBlockFee
+        - basechainBlockFee
+      type: object
+      properties:
+        masterchainBlockFee:
+          type: string
+        basechainBlockFee:
+          type: string
+    ConfigValidatorsTimings:
+      required:
+        - validatorsElectedFor
+        - electionsStartBefore
+        - electionsEndBefore
+        - stakeHeldFor
+      type: object
+      properties:
+        validatorsElectedFor:
+          type: integer
+        electionsStartBefore:
+          type: integer
+        electionsEndBefore:
+          type: integer
+        stakeHeldFor:
+          type: integer
+    ConfigValidatorsQuantityLimits:
+      required:
+        - maxValidators
+        - maxMainValidators
+        - minValidators
+      type: object
+      properties:
+        maxValidators:
+          type: integer
+        maxMainValidators:
+          type: integer
+        minValidators:
+          type: integer
+    ConfigValidatorsStakeLimits:
+      required:
+        - minStake
+        - maxStake
+        - minTotalStake
+        - maxStakeFactor
+      type: object
+      properties:
+        minStake:
+          type: string
+        maxStake:
+          type: string
+        minTotalStake:
+          type: string
+        maxStakeFactor:
+          type: integer
+    ConfigStoragePrice:
+      required:
+        - utimeSince
+        - bitPrice
+        - cellPrice
+        - mcBitPrice
+        - mcCellPrice
+      type: object
+      properties:
+        utimeSince:
+          type: integer
+        bitPrice:
+          type: string
+        cellPrice:
+          type: string
+        mcBitPrice:
+          type: string
+        mcCellPrice:
+          type: string
+    ConfigGasLimitsPrices:
+      type: object
+      properties:
+        gasPrice:
+          type: string
+        gasLimit:
+          type: string
+        specialGasLimit:
+          type: string
+        gasCredit:
+          type: string
+        blockGasLimit:
+          type: string
+        freezeDueLimit:
+          type: string
+        deleteDueLimit:
+          type: string
+        flatGasLimit:
+          type: string
+        flatGasPrice:
+          type: string
+    ConfigBlockLimits:
+      required:
+        - bytes
+        - gas
+        - ltDelta
+      type: object
+      properties:
+        bytes:
+          $ref: '#/components/schemas/ConfigParamLimits'
+        gas:
+          $ref: '#/components/schemas/ConfigParamLimits'
+        ltDelta:
+          $ref: '#/components/schemas/ConfigParamLimits'
+    ConfigParamLimits:
+      required:
+        - underload
+        - softLimit
+        - hardLimit
+      type: object
+      properties:
+        underload:
+          type: integer
+        softLimit:
+          type: integer
+        hardLimit:
+          type: integer
+    ConfigMsgForwardPrices:
+      required:
+        - lumpPrice
+        - bitPrice
+        - cellPrice
+        - ihrPriceFactor
+        - firstFrac
+        - nextFrac
+      type: object
+      properties:
+        lumpPrice:
+          type: string
+        bitPrice:
+          type: string
+        cellPrice:
+          type: string
+        ihrPriceFactor:
+          type: string
+        firstFrac:
+          type: integer
+        nextFrac:
+          type: integer
+    CatchainConfig:
+      required:
+        - mcCatchainLifetime
+        - shardCatchainLifetime
+        - shardValidatorsLifetime
+        - shardValidatorsNum
+      type: object
+      properties:
+        flags:
+          type: integer
+        shuffleMcValidators:
+          type: boolean
+        mcCatchainLifetime:
+          type: integer
+        shardCatchainLifetime:
+          type: integer
+        shardValidatorsLifetime:
+          type: integer
+        shardValidatorsNum:
+          type: integer
+    ConsensusConfig:
+      required:
+        - roundCandidates
+        - nextCandidateDelayMs
+        - consensusTimeoutMs
+        - fastAttempts
+        - attemptDuration
+        - catchainMaxDeps
+        - maxBlockBytes
+        - maxCollatedBytes
+      type: object
+      properties:
+        flags:
+          type: integer
+        newCatchainIds:
+          type: boolean
+        roundCandidates:
+          type: integer
+        nextCandidateDelayMs:
+          type: integer
+        consensusTimeoutMs:
+          type: integer
+        fastAttempts:
+          type: integer
+        attemptDuration:
+          type: integer
+        catchainMaxDeps:
+          type: integer
+        maxBlockBytes:
+          type: integer
+        maxCollatedBytes:
+          type: integer
+    ValidatorSet:
+      required:
+        - utimeSince
+        - utimeUntil
+        - total
+        - main
+        - totalWeight
+      type: object
+      properties:
+        utimeSince:
+          type: integer
+        utimeUntil:
+          type: integer
+        total:
+          type: integer
+        main:
+          type: integer
+        totalWeight:
+          type: string
+        list:
+          type: array
+          items:
+            $ref: '#/components/schemas/Validator'
+    Validator:
+      required:
+        - publicKey
+        - adnlAddr
+        - weight
+        - cumWeight
+      type: object
+      properties:
+        publicKey:
+          type: string
+        adnlAddr:
+          type: string
+        weight:
+          type: string
+        cumWeight:
+          type: string
+    BlockId:
+      required:
+        - workchain
+        - shard
+        - seqno
+      type: object
+      properties:
+        workchain:
+          type: integer
+        shard:
+          type: string
+        seqno:
+          type: integer
+    BlockRequest:
+      required:
+        - workchain
+        - shard
+        - seqno
+      type: object
+      properties:
+        workchain:
+          type: integer
+        shard:
+          type: string
+        seqno:
+          type: integer
+    BlockState:
+      required:
+        - utime
+        - lt
+      type: object
+      properties:
+        utime:
+          type: integer
+        lt:
+          type: string
+        totalBalance:
+          $ref: '#/components/schemas/CurrencyCollection'
+        totalValidatorFees:
+          $ref: '#/components/schemas/CurrencyCollection'
+        globalBalance:
+          $ref: '#/components/schemas/CurrencyCollection'
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Account'
+    BlocksRequest:
+      required:
+        - limit
+        - offset
+        - skipEmpty
+      type: object
+      properties:
+        limit:
+          type: integer
+        offset:
+          type: integer
+          format: int64
+        fromTs:
+          type: integer
+        toTs:
+          type: integer
+        skipEmpty:
+          type: boolean
+    StakeTransactionListRequest:
+      required:
+        - limit
+        - offset
+      type: object
+      properties:
+        limit:
+          type: integer
+        offset:
+          type: integer
+          format: int64
+        fromTs:
+          type: integer
+        toTs:
+          type: integer
+        account:
+          $ref: '#/components/schemas/AccountId'
+        electionTime:
+          type: integer
+    StakeTransactionListItem:
+      required:
+        - electorWorkchain
+        - electorAccountId
+        - transactionHash
+        - transactionLt
+        - transactionType
+        - accountWorkchain
+        - accountAddress
+        - value
+        - time
+      type: object
+      properties:
+        electorWorkchain:
+          type: integer
+        electorAccountId:
+          type: string
+        transactionHash:
+          type: string
+        transactionLt:
+          type: integer
+          format: int64
+        transactionType:
+          type: string
+        accountWorkchain:
+          type: integer
+        accountAddress:
+          type: string
+        value:
+          type: string
+        time:
+          type: integer
+        electionTime:
+          type: integer
+        publicKey:
+          type: string
+        adnl:
+          type: string
+        maxFactor:
+          type: integer
+    ElectionStakesRequest:
+      required:
+        - electionId
+      type: object
+      properties:
+        electionId:
+          type: integer
+    TotalStakesRequest:
+      required:
+        - address
+      type: object
+      properties:
+        address:
+          type: string
+    TotalStakeListItem:
+      required:
+        - electionId
+        - totalStake
+        - totalWeight
+      type: object
+      properties:
+        electionId:
+          type: integer
+        totalStake:
+          type: string
+        totalWeight:
+          type: string
+        stakes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ElectionStakeItem'
+    ElectionStakeItem:
+      required:
+        - publicKey
+        - address
+        - weight
+        - trueStake
+        - unaccountedStake
+      type: object
+      properties:
+        publicKey:
+          type: string
+        address:
+          type: string
+        weight:
+          type: string
+        trueStake:
+          type: string
+        unaccountedStake:
+          type: string
+    StakeTransactionCountRequest:
+      type: object
+      properties:
+        fromTs:
+          type: integer
+        toTs:
+          type: integer
+        account:
+          $ref: '#/components/schemas/AccountId'
+        electionTime:
+          type: integer
+    ValidatorAccountsRequest:
+      type: object
+      properties:
+        publicKeys:
+          type: array
+          items:
+            type: string
+    ValidatorAccountsResponse:
+      required:
+        - publicKeyToAccountId
+      type: object
+      properties:
+        publicKeyToAccountId:
+          $ref: '#/components/schemas/Map_AccountId'
+    Map_AccountId:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/AccountId'
+    ElectionDatesRequest:
+      type: object
+      properties:
+        fromTs:
+          type: integer
+        toTs:
+          type: integer
+    PastElectionListItem:
+      required:
+        - electionId
+        - unfreezeAt
+        - stakeHeldFor
+        - vsetHash
+        - totalStake
+        - totalBonuses
+      type: object
+      properties:
+        electionId:
+          type: integer
+        unfreezeAt:
+          type: integer
+        stakeHeldFor:
+          type: integer
+        vsetHash:
+          type: string
+        totalStake:
+          type: string
+        totalBonuses:
+          type: string
+    ValidatorsState:
+      type: object
+      properties:
+        quantityLimits:
+          $ref: '#/components/schemas/ConfigValidatorsQuantityLimits'
+        stakeLimits:
+          $ref: '#/components/schemas/ConfigValidatorsStakeLimits'
+        timings:
+          $ref: '#/components/schemas/ConfigValidatorsTimings'
+        previous:
+          $ref: '#/components/schemas/ValidatorSet'
+        current:
+          $ref: '#/components/schemas/ValidatorSet'
+        next:
+          $ref: '#/components/schemas/ValidatorSet'
+        previousStakes:
+          type: array
+          items:
+            $ref: '#/components/schemas/StakeTransactionListItem'
+        currentStakes:
+          type: array
+          items:
+            $ref: '#/components/schemas/StakeTransactionListItem'
+        nextStakes:
+          type: array
+          items:
+            $ref: '#/components/schemas/StakeTransactionListItem'

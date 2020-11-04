@@ -1,0 +1,528 @@
+<div class="wrapper" *ngIf="transaction && !error">
+  <app-header></app-header>
+  <main class="main">
+    <section class="border-bottom search-header">
+      <div class="d-flex justify-content-between search-sec-form search-sec-form--long">
+        <app-search-field></app-search-field>
+      </div>
+    </section>
+    <div class="page">
+      <div class="page__top noselect">
+        <div class="larg-container">
+          <nav class="page-breadcrumbs">
+            <a routerLink="/" [innerHTML]="'breadcrumbs.main-page' | translate"></a>
+            <i class="fa fa-caret-right" aria-hidden="true"></i>
+            <a routerLink="/transactions" [innerHTML]="'breadcrumbs.transaction-list' | translate"></a>
+            <i class="fa fa-caret-right" aria-hidden="true"></i>
+            <span [innerHTML]="'breadcrumbs.transaction-page' | translate"></span>
+          </nav>
+          <h1 class="page-title">
+            {{'common.Transaction.1' | translate}} {{transaction.hash | hash : 5}}
+          </h1>
+        </div>
+      </div>
+      <div class="page__main">
+        <nav class="border-bottom nav-block">
+          <div class="larg-container">
+            <ul class="nav nav-tabs noselect">
+              <li class="nav-item">
+                <span class="cursor-pointer nav-link active"
+                      (click)="scrollTo(mainRef)">{{'transaction-page.main-details' | translate}}</span>
+              </li>
+              <li class="nav-item" *ngIf="messages">
+                <span class="cursor-pointer nav-link" (click)="scrollTo(messages)">
+                  {{'common.Messages' | translate}}
+                </span>
+              </li>
+              <li class="nav-item">
+                <span class="cursor-pointer nav-link" (click)="scrollTo(feesRef)">
+                  {{'transaction-page.fees' | translate}}
+                </span>
+              </li>
+              <li class="nav-item" *ngIf="hasStoragePhase">
+                <span class="cursor-pointer nav-link" (click)="scrollTo(storage)">
+                  {{'transaction-page.storage' | translate}}
+                </span>
+              </li>
+              <li class="nav-item" *ngIf="hasCreditPhase">
+                <span class="cursor-pointer nav-link" (click)="scrollTo(credit)">
+                  {{'transaction-page.credit' | translate}}
+                </span>
+              </li>
+              <li class="nav-item" *ngIf="hasComputePhase">
+                <span class="cursor-pointer nav-link" (click)="scrollTo(compute)">
+                  {{'transaction-page.compute' | translate}}
+                </span>
+              </li>
+              <li class="nav-item" *ngIf="hasAction">
+                <span class="cursor-pointer nav-link" (click)="scrollTo(action)">
+                  {{'transaction-page.action' | translate}}
+                </span>
+              </li>
+              <li class="nav-item" *ngIf="hasBounce">
+                <span class="cursor-pointer nav-link" (click)="scrollTo(bounce)">
+                  {{'transaction-page.bounce' | translate}}
+                </span>
+              </li>
+              <li class="nav-item">
+                <span class="cursor-pointer nav-link" (click)="scrollTo(finalState)">
+                  {{'transaction-page.final-state' | translate}}
+                </span>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <section class="table-section">
+          <div class="larg-container">
+            <h2 class="table-section__title" #main>{{'transaction-page.main-details' | translate}}</h2>
+
+            <dl class="row info-list">
+              <dt class="col-6 col-md-3">{{'transaction-page.id' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                {{transaction.hash | hash}}
+                <button type="button" class="btn btn-outline-primary btn-copy"
+                        ngxClipboard [cbContent]="transaction.hash | hash">
+                  <i class="fa fa-copy" aria-hidden="true"></i>
+                </button>
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'common.Date-and-Time' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                {{(transaction.now | time) | async}}
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.type' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <span *ngIf="transaction.description.kind == 'tick_tok'" class="color-gray-600">
+                  {{'transaction-type.tick_tok.' + transaction.description.isTock | translate}}
+                </span>
+                <span *ngIf="transaction.description.kind != 'tick_tok'">
+                  {{'transaction-type.' + transaction.description.kind | translate}}
+                </span>
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'common.Account.1' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <a [routerLink]="'/accounts/' + transaction.workchain + ':' + transaction.account">
+                  <app-account-square [address]="transaction.account"></app-account-square>
+                  {{transaction.workchain}}:{{transaction.account.toLowerCase()}}
+                </a>
+                <button type="button" class="btn btn-outline-primary btn-copy"
+                        ngxClipboard [cbContent]="transaction.workchain + ':' +transaction.account.toLowerCase()">
+                  <i class="fa fa-copy" aria-hidden="true"></i>
+                </button>
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.balance-change' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <ng-container *ngIf="balanceChange && balanceChange != '0'">
+                  <span *ngIf="balanceChange[0] != '-'">+</span><span
+                  [innerHTML]="balanceChange | amount"></span>&nbsp;{{'common.TON' | translate}}
+                </ng-container>
+              </dd>
+
+              <dt *ngIf="valueSent && valueSent != '0'"
+                  class="col-6 col-md-3">{{'transaction-page.value-sent' | translate}}</dt>
+              <dd *ngIf="valueSent && valueSent != '0'" class="col-6 col-md-9">
+                <span [innerHTML]="valueSent | amount"></span>&nbsp;{{'common.TON' | translate}}
+              </dd>
+
+              <dt *ngIf="valueReceived && valueReceived != '0'"
+                  class="col-6 col-md-3">{{'transaction-page.value-received' | translate}}</dt>
+              <dd *ngIf="valueReceived && valueReceived != '0'" class="col-6 col-md-9">
+                <span [innerHTML]="valueReceived | amount"></span>&nbsp;{{'common.TON' | translate}}
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.fees' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <ng-container *ngIf="fees && fees != '0'">
+                  <span [innerHTML]="fees | amount"></span>&nbsp;{{'common.TON' | translate}}
+                </ng-container>
+              </dd>
+            </dl>
+
+
+            <span class="more-btn cursor-pointer noselect"
+                  [class.open]="additionalInfoOpen"
+                  (click)="additionalInfoOpen = !additionalInfoOpen">
+              {{'transaction-page.more-information' | translate}}
+              <i class="fa fa fa-caret-down" aria-hidden="true"></i>
+            </span>
+
+            <dl class="row info-list" *ngIf="additionalInfoOpen">
+              <ng-container *ngIf="transaction.blockId">
+                <dt class="col-6 col-md-3">{{'common.Block.1' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <a [routerLink]="'/blocks/' + transaction.blockId.rootHash">
+                    {{transaction.blockId.rootHash | hash}}
+                  </a><br>
+                  ({{transaction.blockId.workchain}} :
+                  {{transaction.blockId.shard | shard}} :
+                  {{transaction.blockId.seqno}})
+                </dd>
+              </ng-container>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.logical-time' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{transaction.lt}}</dd>
+
+              <ng-container
+                *ngIf="transaction.prevTransHash != '0000000000000000000000000000000000000000000000000000000000000000'">
+                <dt class="col-6 col-md-3">{{'transaction-page.previous-transaction' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <a
+                    [routerLink]="'/transactions/' + transaction.prevTransHash">{{transaction.prevTransHash | hash}}</a>
+                </dd>
+
+                <dt class="col-6 col-md-3">{{'transaction-page.previous-transaction-logic-time' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  {{transaction.prevTransLt}}
+                </dd>
+              </ng-container>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.original-status' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                {{'account-state.' + transaction.originalStatus | translate}}
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.end-status' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                {{'account-state.' + transaction.endStatus | translate}}
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.old-hash' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                {{transaction.hashUpdate.oldHash | hash}}
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.new-hash' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                {{transaction.hashUpdate.newHash | hash}}
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.credit-first' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                {{'common.YesNo.' + transaction.description.creditFirst | translate}}
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.aborted' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                {{'common.YesNo.' + transaction.description.aborted | translate}}
+              </dd>
+            </dl>
+
+          </div>
+        </section>
+
+        <div #messages>
+          <app-transaction-messages [transaction]="transaction"></app-transaction-messages>
+        </div>
+
+        <section class="table-section">
+          <div class="larg-container">
+            <h2 class="table-section__title" #feesRef>{{'transaction-page.fees' | translate}}</h2>
+
+            <dl class="row info-list">
+              <dt class="col-6 col-md-3">{{'transaction-page.fees.storage-fee' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <span [innerHTML]="transaction.description.storagePhase?.storageFeesCollected | amount"></span>&nbsp;{{'common.TON' | translate}}
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.fees.gas-fee' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <span [innerHTML]="transaction.description.computePhase?.gasFees | amount"></span>&nbsp;{{'common.TON' | translate}}
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.fees.action-fee' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <span [innerHTML]="transaction.description.action?.totalActionFees | amount"></span>&nbsp;{{'common.TON' | translate}}
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.fees.bounce-fee' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <span [innerHTML]="transaction.description.bounce?.msgFees | amount"></span>&nbsp;{{'common.TON' | translate}}
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.fees.other-fees' | translate}}</dt>
+              <dd class="col-6 col-md-9"><span [innerHTML]="otherFees | amount"></span>&nbsp;{{'common.TON' | translate}}</dd>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.fees.out-fwd-fee' | translate}}</dt>
+              <dd class="col-6 col-md-9"><span [innerHTML]="outFwdFee | amount"></span>&nbsp;{{'common.TON' | translate}}</dd>
+            </dl>
+
+          </div>
+        </section>
+
+        <section class="table-section" *ngIf="hasStoragePhase">
+          <div class="larg-container">
+            <h2 class="table-section__title" #storage>{{'transaction-page.storage-phase' | translate}}</h2>
+
+            <dl class="row info-list">
+              <dt class="col-6 col-md-3">{{'transaction-page.storage-phase.storage-fees-collected' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <span [innerHTML]="transaction.description.storagePhase?.storageFeesCollected | amount"></span>&nbsp;{{'common.TON' | translate}}
+              </dd>
+
+              <ng-container *ngIf="transaction.description.storagePhase?.storageFeesDue">
+                <dt class="col-6 col-md-3">{{'transaction-page.storage-phase.storage-fees-due' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <span [innerHTML]="transaction.description.storagePhase.storageFeesDue | amount"></span>&nbsp;{{'common.TON' | translate}}
+                </dd>
+              </ng-container>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.storage-phase.storage-status-change' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <span *ngIf="transaction.description.storagePhase">
+                  {{'transaction-page.status-change.' + transaction.description.storagePhase.statusChange  | translate}}
+                </span>
+              </dd>
+            </dl>
+
+          </div>
+        </section>
+
+        <section class="table-section" *ngIf="hasCreditPhase">
+          <div class="larg-container">
+            <h2 class="table-section__title" #credit>{{'transaction-page.credit-phase' | translate}}</h2>
+
+            <dl class="row info-list">
+              <ng-container *ngIf="transaction.description.creditPhase?.dueFeesCollected">
+                <dt class="col-6 col-md-3">{{'transaction-page.credit-phase.due-fees-collected' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <span [innerHTML]="transaction.description.creditPhase?.dueFeesCollected | amount"></span>&nbsp;{{'common.TON' | translate}}
+                </dd>
+              </ng-container>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.credit-phase.credit' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <span [innerHTML]="transaction.description.creditPhase?.credit.grams | amount"></span>&nbsp;{{'common.TON' | translate}}
+              </dd>
+            </dl>
+
+          </div>
+        </section>
+
+        <section class="table-section" *ngIf="hasComputePhase">
+          <div class="larg-container">
+            <h2 class="table-section__title" #compute>{{'transaction-page.compute-phase' | translate}}</h2>
+
+            <dl class="row info-list">
+              <dt class="col-6 col-md-3">{{'transaction-page.compute-phase.type' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                {{'transaction-page.compute-phase.type.' + transaction.description.computePhase.kind | translate}}
+              </dd>
+
+              <ng-container *ngIf="transaction.description.computePhase?.reason != null">
+                <dt class="col-6 col-md-3">{{'transaction-page.compute-phase.reason' | translate}}</dt>
+                <dd class="col-6 col-md-9">{{transaction.description.computePhase?.reason}}</dd>
+              </ng-container>
+
+              <ng-container *ngIf="transaction.description.computePhase?.gasLimit != null">
+                <dt class="col-6 col-md-3">{{'transaction-page.compute-phase.gas-limit' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <span [innerHTML]="transaction.description.computePhase?.gasLimit"></span>
+                </dd>
+              </ng-container>
+
+              <ng-container *ngIf="transaction.description.computePhase?.gasUsed != null">
+                <dt class="col-6 col-md-3">{{'transaction-page.compute-phase.gas-used' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <span [innerHTML]="transaction.description.computePhase?.gasUsed"></span>
+                </dd>
+              </ng-container>
+
+              <ng-container *ngIf="transaction.description.computePhase?.gasFees != null">
+                <dt class="col-6 col-md-3">{{'transaction-page.compute-phase.gas-fees' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <span [innerHTML]="transaction.description.computePhase?.gasFees | amount"></span>&nbsp;{{'common.TON' | translate}}
+                </dd>
+              </ng-container>
+
+              <ng-container *ngIf="transaction.description.computePhase?.gasCredit != null">
+                <dt class="col-6 col-md-3">{{'transaction-page.compute-phase.gas-credit' | translate}}</dt>
+                <dd class="col-6 col-md-9">{{transaction.description.computePhase?.gasCredit}}</dd>
+              </ng-container>
+
+              <ng-container *ngIf="transaction.description.computePhase?.success != null">
+                <dt class="col-6 col-md-3">{{'transaction-page.compute-phase.success' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  {{'common.YesNo.' + transaction.description.computePhase?.success | translate}}
+                </dd>
+              </ng-container>
+
+              <ng-container *ngIf="transaction.description.computePhase?.msgStateUsed != null">
+                <dt class="col-6 col-md-3">{{'transaction-page.compute-phase.message-state-used' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  {{'common.YesNo.' + transaction.description.computePhase?.msgStateUsed | translate}}
+                </dd>
+              </ng-container>
+
+              <ng-container *ngIf="transaction.description.computePhase?.accountActivated != null">
+                <dt class="col-6 col-md-3">{{'transaction-page.compute-phase.account-activated' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  {{'common.YesNo.' + transaction.description.computePhase?.accountActivated | translate}}
+                </dd>
+              </ng-container>
+
+              <ng-container *ngIf="transaction.description.computePhase?.mode != null">
+                <dt class="col-6 col-md-3">{{'transaction-page.compute-phase.mode' | translate}}</dt>
+                <dd class="col-6 col-md-9">{{transaction.description.computePhase?.mode}}</dd>
+              </ng-container>
+
+              <ng-container *ngIf="transaction.description.computePhase?.exitCode != null">
+                <dt class="col-6 col-md-3">{{'transaction-page.compute-phase.exit-code' | translate}}</dt>
+                <dd class="col-6 col-md-9">{{transaction.description.computePhase?.exitCode}}</dd>
+              </ng-container>
+
+              <ng-container *ngIf="transaction.description.computePhase?.exitArg != null">
+                <dt class="col-6 col-md-3">{{'transaction-page.compute-phase.exit-arg' | translate}}</dt>
+                <dd class="col-6 col-md-9">{{transaction.description.computePhase?.exitArg}}</dd>
+              </ng-container>
+
+              <ng-container *ngIf="transaction.description.computePhase?.vmSteps != null">
+                <dt class="col-6 col-md-3">{{'transaction-page.compute-phase.vm-steps' | translate}}</dt>
+                <dd class="col-6 col-md-9">{{transaction.description.computePhase?.vmSteps}}</dd>
+              </ng-container>
+
+              <ng-container *ngIf="transaction.description.computePhase?.vmInitStateHash != null">
+                <dt class="col-6 col-md-3">{{'transaction-page.compute-phase.vm-init-state-hash' | translate}}</dt>
+                <dd class="col-6 col-md-9">{{transaction.description.computePhase?.vmInitStateHash | hash}}</dd>
+              </ng-container>
+
+              <ng-container *ngIf="transaction.description.computePhase?.vmFinalStateHash != null">
+                <dt class="col-6 col-md-3">{{'transaction-page.compute-phase.vm-final-state-hash' | translate}}</dt>
+                <dd class="col-6 col-md-9">{{transaction.description.computePhase?.vmFinalStateHash | hash}}</dd>
+              </ng-container>
+            </dl>
+
+          </div>
+        </section>
+
+        <section class="table-section" *ngIf="hasAction">
+          <div class="larg-container">
+            <h2 class="table-section__title" #action>{{'transaction-page.action-phase' | translate}}</h2>
+
+            <dl class="row info-list">
+              <dt class="col-6 col-md-3">{{'transaction-page.action.success' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <span>{{'common.YesNo.' + transaction.description.action?.success | translate}}</span>
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.action.valid' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <span>{{'common.YesNo.' + transaction.description.action?.valid | translate}}</span>
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.action.no-funds' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <span>{{'common.YesNo.' + transaction.description.action?.noFunds | translate}}</span>
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.action.status-change' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <span *ngIf="transaction.description.action">
+                {{'transaction-page.status-change.' + transaction.description.action.statusChange | translate}}
+                </span>
+              </dd>
+
+              <ng-container *ngIf="transaction.description.action?.totalFwdFees != null">
+                <dt class="col-6 col-md-3">{{'transaction-page.action.total-fwd-fees' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <span [innerHTML]="transaction.description.action?.totalFwdFees | amount"></span>&nbsp;{{'common.TON' | translate}}
+                </dd>
+              </ng-container>
+
+              <ng-container *ngIf="transaction.description.action?.totalActionFees != null">
+                <dt class="col-6 col-md-3">{{'transaction-page.action.total-action-fees' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <span [innerHTML]="transaction.description.action?.totalActionFees | amount"></span>&nbsp;{{'common.TON' | translate}}
+                </dd>
+              </ng-container>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.action.result-code' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{transaction.description.action?.resultCode}}</dd>
+
+              <ng-container *ngIf="transaction.description.action?.resultArg != null">
+                <dt class="col-6 col-md-3">{{'transaction-page.action.result-arg' | translate}}</dt>
+                <dd class="col-6 col-md-9">{{transaction.description.action?.resultArg}}</dd>
+              </ng-container>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.action.total-actions' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{transaction.description.action?.totalActions}}</dd>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.action.special-actions' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{transaction.description.action?.specialActions}}</dd>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.action.skipped-actions' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{transaction.description.action?.skippedActions}}</dd>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.action.messages-created' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{transaction.description.action?.messagesCreated}}</dd>
+
+              <dt class="col-6 col-md-3">{{'transaction-page.action.action-list-hash' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{transaction.description.action?.actionListHash | hash}}</dd>
+            </dl>
+
+          </div>
+        </section>
+
+        <section class="table-section" *ngIf="hasBounce">
+          <div class="larg-container">
+            <h2 class="table-section__title" #bounce>{{'transaction-page.bounce' | translate}}</h2>
+
+            <dl class="row info-list">
+              <dt class="col-6 col-md-3">{{'transaction-page.bounce.type' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{transaction.description.bounce.kind}}</dd>
+
+              <ng-container *ngIf="transaction.description.bounce?.msgSize?.cells">
+                <dt class="col-6 col-md-3">{{'transaction-page.bounce.msg-size-cells' | translate}}</dt>
+                <dd class="col-6 col-md-9">{{transaction.description.bounce?.msgSize?.cells}}</dd>
+              </ng-container>
+
+              <ng-container *ngIf="transaction.description.bounce?.msgSize?.bits">
+                <dt class="col-6 col-md-3">{{'transaction-page.bounce.msg-size-bits' | translate}}</dt>
+                <dd class="col-6 col-md-9">{{transaction.description.bounce?.msgSize?.bits}}</dd>
+              </ng-container>
+
+              <ng-container *ngIf="transaction.description.bounce?.reqFwdFees">
+                <dt class="col-6 col-md-3">{{'transaction-page.bounce.req-fwd-fees' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <span [innerHTML]="transaction.description.bounce?.reqFwdFees | amount"></span>&nbsp;{{'common.TON' | translate}}
+                </dd>
+              </ng-container>
+
+              <ng-container *ngIf="transaction.description.bounce?.msgFees">
+                <dt class="col-6 col-md-3">{{'transaction-page.bounce.msg-fees' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <span [innerHTML]="transaction.description.bounce?.msgFees | amount"></span>&nbsp;{{'common.TON' | translate}}
+                </dd>
+              </ng-container>
+
+              <ng-container *ngIf="transaction.description.bounce?.fwdFees">
+                <dt class="col-6 col-md-3">{{'transaction-page.bounce.fwd-fees' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <span [innerHTML]="transaction.description.bounce?.fwdFees | amount"></span>&nbsp;{{'common.TON' | translate}}
+                </dd>
+              </ng-container>
+            </dl>
+
+          </div>
+        </section>
+
+        <section class="table-section">
+          <div class="larg-container">
+            <h2 class="table-section__title" #finalState>{{'transaction-page.final-state' | translate}}</h2>
+
+            <dl class="row info-list">
+              <dt class="col-6 col-md-3">{{'transaction-page.destroyed' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{'common.YesNo.' + transaction.description.destroyed | translate}}</dd>
+            </dl>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+<ng-container *ngIf="error === 404">
+  <h1>404</h1>
+</ng-container>

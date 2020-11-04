@@ -1,0 +1,47 @@
+@font-face {
+  font-family: 'PT Root UI';
+  src: url('PTRootUI-Medium.eot');
+  src: local('PT Root UI Medium'), local('PTRootUI-Medium'),
+  url('PTRootUI-Medium.eot?#iefix') format('embedded-opentype'),
+  url('PTRootUI-Medium.woff2') format('woff2'),
+  url('PTRootUI-Medium.woff') format('woff'),
+  url('PTRootUI-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PT Root UI';
+  src: url('PTRootUI-Light.eot');
+  src: local('PT Root UI Light'), local('PTRootUI-Light'),
+  url('PTRootUI-Light.eot?#iefix') format('embedded-opentype'),
+  url('PTRootUI-Light.woff2') format('woff2'),
+  url('PTRootUI-Light.woff') format('woff'),
+  url('PTRootUI-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PT Root UI';
+  src: url('PTRootUI-Regular.eot');
+  src: local('PT Root UI'), local('PTRootUI-Regular'),
+  url('PTRootUI-Regular.eot?#iefix') format('embedded-opentype'),
+  url('PTRootUI-Regular.woff2') format('woff2'),
+  url('PTRootUI-Regular.woff') format('woff'),
+  url('PTRootUI-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PT Root UI';
+  src: url('PTRootUI-Bold.eot');
+  src: local('PT Root UI Bold'), local('PTRootUI-Bold'),
+  url('PTRootUI-Bold.eot?#iefix') format('embedded-opentype'),
+  url('PTRootUI-Bold.woff2') format('woff2'),
+  url('PTRootUI-Bold.woff') format('woff'),
+  url('PTRootUI-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}

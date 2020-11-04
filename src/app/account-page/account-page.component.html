@@ -1,0 +1,225 @@
+<div class="wrapper" *ngIf="account && !error">
+  <app-header></app-header>
+  <main class="main">
+    <section class="border-bottom search-header">
+      <div class="d-flex justify-content-between search-sec-form search-sec-form--long">
+        <app-search-field></app-search-field>
+      </div>
+    </section>
+    <div class="page">
+      <div class="page__top noselect">
+        <div class="larg-container">
+          <div class="float-right">
+            <ngx-qrcode [value]="'ton://chat/' + account.workchain + ':' + account.addressHex"></ngx-qrcode>
+          </div>
+          <nav class="page-breadcrumbs">
+            <a routerLink="/" [innerHTML]="'breadcrumbs.main-page' | translate"></a>
+            <i class="fa fa-caret-right" aria-hidden="true"></i>
+            <a routerLink="/accounts" [innerHTML]="'breadcrumbs.account-list' | translate"></a>
+            <i class="fa fa-caret-right" aria-hidden="true"></i>
+            <span [innerHTML]="'breadcrumbs.account-page' | translate"></span>
+          </nav>
+          <h1 class="page-title">
+            <app-account-square [address]="account.addressHex"
+                                [size]="10"></app-account-square>&nbsp;{{'account-page.header' | translate}}
+            {{account.workchain}}:{{account.addressHex | hash: 5}}
+          </h1>
+        </div>
+      </div>
+      <div class="page__main">
+        <nav class="border-bottom nav-block noselect">
+          <div class="larg-container">
+            <ul class="nav nav-tabs">
+              <li class="nav-item">
+                <span class="cursor-pointer nav-link active"
+                      (click)="scrollTo(main)">{{'account-page.main-details' | translate}}</span>
+              </li>
+              <li class="nav-item">
+                <span class="cursor-pointer nav-link"
+                      (click)="scrollTo(messages)">{{'common.Messages' | translate}}</span>
+              </li>
+              <li class="nav-item">
+                <span class="cursor-pointer nav-link"
+                      (click)="scrollTo(transactions)">{{'common.Transactions' | translate}}</span>
+              </li>
+              <!--              <li class="nav-item">-->
+              <!--                <span class="cursor-pointer nav-link" (click)="scrollTo(stakeActions)">{{'stakes-list.stake-actions' | translate}}</span>-->
+              <!--              </li>-->
+            </ul>
+          </div>
+        </nav>
+
+        <section class="table-section">
+          <div class="larg-container">
+            <h2 class="table-section__title" #main>{{'account-page.main-details' | translate}}</h2>
+
+            <dl class="row info-list">
+              <dt class="col-6 col-md-3">{{'common.Address' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <app-account-square [address]="account.addressHex"></app-account-square>
+                {{account.workchain}}:{{account.addressHex.toLowerCase()}}
+                <button type="button" class="btn btn-outline-primary btn-copy"
+                        ngxClipboard [cbContent]="account.workchain + ':' +account.addressHex.toLowerCase()">
+                  <i class="fa fa-copy" aria-hidden="true"></i>
+                </button>
+                <br>
+                <span class="show-base64 cursor-pointer noselect"
+                      [class.open]="addressesBase64Open"
+                      (click)="addressesBase64Open = !addressesBase64Open">
+                  <span *ngIf="!addressesBase64Open">{{'common.Show-base64' | translate}}</span>
+                  <span *ngIf="addressesBase64Open">{{'common.Hide-base64' | translate}}</span>
+                  <i class="fa fa fa-caret-down" aria-hidden="true"></i>
+                </span>
+              </dd>
+
+              <ng-container *ngIf="addressesBase64Open">
+
+                <dt class="col-6 col-md-3">{{'account-page.bounceable-base64' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  {{account.addressBase64Bounceable}}
+                  <button type="button" class="btn btn-outline-primary btn-copy"
+                          ngxClipboard [cbContent]="account.addressBase64Bounceable">
+                    <i class="fa fa-copy" aria-hidden="true"></i>
+                  </button>
+                </dd>
+
+                <dt class="col-6 col-md-3">{{'account-page.bounceable-base64-url' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  {{account.addressBase64Bounceable.split('+').join('-').split('/').join('_')}}
+                  <button type="button" class="btn btn-outline-primary btn-copy"
+                          ngxClipboard
+                          [cbContent]="account.addressBase64Bounceable.split('+').join('-').split('/').join('_')">
+                    <i class="fa fa-copy" aria-hidden="true"></i>
+                  </button>
+                </dd>
+
+                <dt class="col-6 col-md-3">{{'account-page.non-bounceable-base64' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  {{account.addressBase64NonBounceable}}
+                  <button type="button" class="btn btn-outline-primary btn-copy" ngxClipboard
+                          [cbContent]="account.addressBase64NonBounceable">
+                    <i class="fa fa-copy" aria-hidden="true"></i>
+                  </button>
+                </dd>
+
+                <dt class="col-6 col-md-3">{{'account-page.non-bounceable-base64-url' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  {{account.addressBase64NonBounceable.split('+').join('-').split('/').join('_')}}
+                  <button type="button" class="btn btn-outline-primary btn-copy" ngxClipboard
+                          [cbContent]="account.addressBase64NonBounceable.split('+').join('-').split('/').join('_')">
+                    <i class="fa fa-copy" aria-hidden="true"></i>
+                  </button>
+                </dd>
+
+              </ng-container>
+
+              <dt class="col-6 col-md-3">{{'account-page.state' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <span class="account-state {{account.state.kind}}">
+                  {{'account-state.' + account.state.kind | translate}}
+                </span>
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'account-page.balance' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <strong *ngIf="account.balance" [innerHTML]="account.balance.grams | amount"></strong>
+                <strong *ngIf="!account.balance">0</strong>
+                {{'common.TON' | translate}}
+              </dd>
+            </dl>
+
+
+            <span class="more-btn cursor-pointer noselect"
+                  [class.open]="additionalInfoOpen"
+                  (click)="additionalInfoOpen = !additionalInfoOpen">
+              {{'account-page.more-information' | translate}}
+              <i class="fa fa fa-caret-down" aria-hidden="true"></i>
+            </span>
+
+            <dl class="row info-list" *ngIf="additionalInfoOpen">
+              <dt class="col-6 col-md-3"><strong>{{'account-page.storage-statistics' | translate}}</strong></dt>
+              <dd class="col-6 col-md-9"></dd>
+
+              <dt class="col-6 col-md-3">{{'account-page.storage-statistics.last-paid' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <span *ngIf="account.storageStat.lastPaid">
+                  {{(account.storageStat.lastPaid | time) | async }}
+                </span>
+              </dd>
+
+              <ng-container *ngIf="account.storageStat.duePayment">
+                <dt class="col-6 col-md-3">{{'account-page.storage-statistics.due-payment' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <span *ngIf="account.storageStat.duePayment">{{account.storageStat.duePayment}}</span>
+                </dd>
+              </ng-container>
+
+              <dt class="col-6 col-md-3">{{'account-page.storage-statistics.storage-used' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <div>
+                  {{'account-page.storage-statistics.storage-used.bits' | translate}}:
+                  {{account.storageStat.storageUsed.bits}}
+                </div>
+                <div>
+                  {{'account-page.storage-statistics.storage-used.cells' | translate}}:
+                  {{account.storageStat.storageUsed.cells}}
+                </div>
+                <div *ngIf="account.storageStat.storageUsed.publicCells">
+                  {{'account-page.storage-statistics.storage-used.public-cells' | translate}}:
+                  {{account.storageStat.storageUsed.publicCells}}
+                </div>
+              </dd>
+            </dl>
+
+            <dl class="row info-list" *ngIf="additionalInfoOpen">
+              <ng-container *ngIf="account.state.code">
+                <dt class="col-6 col-md-3">{{'account-page.code' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <button type="button" class="btn btn-outline-secondary btn-download m-0" (click)="downloadCode()">
+                    {{'common.Download' | translate}}&nbsp;<i class="fa fa-download"></i>
+                  </button>
+                  <button type="button" class="btn btn-outline-primary btn-copy"
+                          ngxClipboard [cbContent]="account.state.code">
+                    <i class="fa fa-copy" aria-hidden="true"></i>
+                  </button>
+                </dd>
+              </ng-container>
+              <ng-container *ngIf="account.state.data">
+                <dt class="col-6 col-md-3">{{'account-page.data' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <button type="button" class="btn btn-outline-secondary btn-download m-0" (click)="downloadData()">
+                    {{'common.Download' | translate}}&nbsp;<i class="fa fa-download"></i>
+                  </button>
+                  <button type="button" class="btn btn-outline-primary btn-copy"
+                          ngxClipboard [cbContent]="account.state.data">
+                    <i class="fa fa-copy" aria-hidden="true"></i>
+                  </button>
+                </dd>
+              </ng-container>
+            </dl>
+
+          </div>
+        </section>
+
+        <div #messages>
+          <app-messages [account]="{workchain: account.workchain, address: account.addressHex}"
+                        [showHeader]="true"></app-messages>
+        </div>
+
+        <div #transactions>
+          <app-transactions [account]="{workchain: account.workchain, address: account.addressHex}"
+                            [showHeader]="true"></app-transactions>
+        </div>
+
+        <!--        <div #stakeActions *ngIf="isValidator">-->
+        <!--          <app-stakes [account]="{workchain: account.workchain, address: account.addressHex}"-->
+        <!--                      [showHeader]="true"></app-stakes>-->
+        <!--        </div>-->
+
+      </div>
+    </div>
+  </main>
+</div>
+<ng-container *ngIf="error === 404">
+  <h1>404</h1>
+</ng-container>

@@ -1,0 +1,106 @@
+<section class="table-section">
+  <div class="larg-container">
+    <h2 class="table-section__title">
+      {{'common.Messages' | translate}}
+    </h2>
+    <div class="tablewrap">
+      <table class="table table-sm cust-table cust-table--border">
+        <thead>
+        <tr>
+          <th scope="col">{{'messages.body-hash' | translate}}</th>
+          <th scope="col">{{'transaction-messages.sender' | translate}}</th>
+          <th scope="col">{{'transaction-messages.recipient' | translate}}</th>
+          <th scope="col">{{'messages.value' | translate}}, {{'common.TON' | translate}}</th>
+          <th scope="col">{{'message-page.message-type' | translate}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngIf="transaction.messageIn != null">
+          <td>
+            <a [routerLink]="'/transactions/' + transaction.hash + '/in'" class="like-link">
+              {{transaction.messageIn.hash | hash : 5}}
+            </a>
+          </td>
+          <td>
+            <ng-container *ngIf="transaction.messageIn.info.src?.address">
+              <a class="like-link"
+                 [routerLink]="'/accounts/' + transaction.messageIn.info.src.workchain + ':' + transaction.messageIn.info.src.address"
+                 [title]="transaction.messageIn.info.src.workchain + ':' + transaction.messageIn.info.src.address | hash">
+                <app-account-square [address]="transaction.messageIn.info.src.address"></app-account-square>
+                {{transaction.messageIn.info.src.workchain}}:{{transaction.messageIn.info.src.address | hash : 5}}
+              </a>
+            </ng-container>
+            <ng-container *ngIf="!transaction.messageIn.info.src">
+              &mdash;
+            </ng-container>
+          </td>
+          <td>
+            <ng-container *ngIf="transaction.messageIn.info.dest?.address">
+              <a class="like-link"
+                 [routerLink]="'/accounts/' + transaction.messageIn.info.dest.workchain + ':' + transaction.messageIn.info.dest.address"
+                 [title]="transaction.messageIn.info.dest.workchain + ':' + transaction.messageIn.info.dest.address | hash">
+                <app-account-square [address]="transaction.messageIn.info.dest.address"></app-account-square>
+                {{transaction.messageIn.info.dest.workchain}}:{{transaction.messageIn.info.dest.address | hash : 5}}
+              </a>
+            </ng-container>
+            <ng-container *ngIf="!transaction.messageIn.info.dest">
+              &mdash;
+            </ng-container>
+          </td>
+          <td>
+            <ng-container *ngIf="transaction.messageIn.info?.value != null">
+                <span *ngIf="transaction.messageIn.info?.value != null"
+                      [innerHTML]="transaction.messageIn.info?.value | amount"></span>
+            </ng-container>
+          </td>
+          <td>{{'message-type.' + transaction.messageIn.info.kind | translate}}</td>
+        </tr>
+
+        <ng-container *ngIf="transaction.messagesOut && transaction.messagesOut.length > 0">
+          <tr *ngFor="let message of transaction.messagesOut; let i = index">
+
+            <td>
+              <a [routerLink]="'/transactions/' + transaction.hash + '/out/' + i" class="like-link">
+                {{message.hash | hash : 5}}
+              </a>
+            </td>
+            <td>
+              <ng-container *ngIf="message.info.src?.address">
+                <a class="like-link"
+                   [routerLink]="'/accounts/' + message.info.src.workchain + ':' + message.info.src.address"
+                   [title]="message.info.src.workchain + ':' + message.info.src.address | hash">
+                  <app-account-square [address]="message.info.src.address"></app-account-square>
+                  {{message.info.src.workchain}}:{{message.info.src.address | hash : 5}}
+                </a>
+              </ng-container>
+              <ng-container *ngIf="!message.info.src">
+                &mdash;
+              </ng-container>
+            </td>
+            <td>
+              <ng-container *ngIf="message.info.dest?.address">
+                <a class="like-link"
+                   [routerLink]="'/accounts/' + message.info.dest.workchain + ':' + message.info.dest.address"
+                   [title]="message.info.dest.workchain + ':' + message.info.dest.address | hash">
+                  <app-account-square [address]="message.info.dest.address"></app-account-square>
+                  {{message.info.dest.workchain}}:{{message.info.dest.address | hash : 5}}
+                </a>
+              </ng-container>
+              <ng-container *ngIf="!message.info.dest">
+                &mdash;
+              </ng-container>
+            </td>
+            <td>
+              <ng-container *ngIf="message.info?.value != null">
+                <span *ngIf="message.info?.value != null"
+                      [innerHTML]="message.info?.value | amount"></span>
+              </ng-container>
+            </td>
+            <td>{{'message-type.' + message.info.kind | translate}}</td>
+          </tr>
+        </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

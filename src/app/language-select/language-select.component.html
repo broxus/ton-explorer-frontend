@@ -1,0 +1,11 @@
+<div dropdown class="header__drop dropdown">
+  <button class="btn dropdown-toggle" dropdownToggle>
+    {{langTitles[currentLang]}}
+  </button>
+
+  <div *dropdownMenu class="dropdown-menu">
+    <div *ngFor="let lang of langs">
+      <a class="dropdown-item cursor-pointer" (click)="setLang(lang)">{{langTitles[lang]}}</a>
+    </div>
+  </div>
+</div>

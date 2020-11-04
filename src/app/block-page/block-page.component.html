@@ -1,0 +1,517 @@
+<div class="wrapper" *ngIf="block && !error">
+  <app-header></app-header>
+  <main class="main">
+    <section class="border-bottom search-header">
+      <div class="d-flex justify-content-between search-sec-form search-sec-form--long">
+        <app-search-field></app-search-field>
+      </div>
+    </section>
+    <div class="page">
+      <div class="page__top noselect">
+        <div class="larg-container">
+          <nav class="page-breadcrumbs">
+            <a routerLink="/">{{'common.Explorer' | translate}}</a>
+            <i class="fa fa-caret-right" aria-hidden="true"></i>
+            <a routerLink="/blocks">{{'common.Blocks' | translate}}</a>
+            <i class="fa fa-caret-right" aria-hidden="true"></i>
+            <span>{{'block-page.block-details' | translate}}</span>
+          </nav>
+          <h1 class="page-title">{{'common.Block.1' | translate}}
+            {{block.id.rootHash | hash: 5}}
+            ({{block.id.workchain}} :
+            {{block.id.shard.substr(0, 2)}} :
+            {{block.id.seqno}})
+          </h1>
+        </div>
+      </div>
+      <div class="page__main">
+        <nav class="border-bottom nav-block noselect">
+          <div class="larg-container">
+            <ul class="nav nav-tabs">
+              <li class="nav-item">
+                <span class="cursor-pointer nav-link active"
+                      (click)="scrollTo(mainDetails)">{{'block-page.main-details' | translate}}</span>
+              </li>
+              <li class="nav-item">
+                <span class="cursor-pointer nav-link"
+                      (click)="scrollTo(valueFlow)">{{'block-page.value-flow' | translate}}</span>
+              </li>
+              <li class="nav-item" *ngIf="hasAccountBlocks">
+                <span class="cursor-pointer nav-link"
+                      (click)="scrollTo(accountBlocks)">{{'block-page.account-blocks' | translate}}</span>
+              </li>
+              <li class="nav-item" *ngIf="hasShardHashes">
+                <span class="cursor-pointer nav-link"
+                      (click)="scrollTo(shardHashes)">{{'block-page.shard-hashes' | translate}}</span>
+              </li>
+              <li class="nav-item" *ngIf="hasTransactions">
+                <span class="cursor-pointer nav-link" (click)="scrollTo(transactions)">
+                  {{'common.Transactions' | translate}}
+                  <span class="badge badge-secondary badge-pill">{{transactionCount}}{{'common.after-count' | translate}}</span>
+                </span>
+
+              </li>
+              <li class="nav-item" *ngIf="hasMessages">
+                <span class="cursor-pointer nav-link" (click)="scrollTo(messages)">
+                  {{'common.Messages' | translate}}
+                  <span class="badge badge-secondary badge-pill">{{messageCount}}{{'common.after-count' | translate}}</span>
+                </span>
+
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <section class="table-section">
+          <div class="larg-container">
+            <h2 class="table-section__title" #mainDetails>{{'block-page.main-details' | translate}}</h2>
+
+            <dl class="row info-list">
+              <dt class="col-6 col-md-3">{{'common.Number' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                {{block.id.seqno}}
+
+                <ng-container *ngFor="let blockId of block.previous">
+                  <button type="button" class="btn btn-outline-primary btn-arrow"
+                          (click)="openBlockBySeqno(blockId)">
+                    <i class="fa fa-caret-left"
+                       aria-hidden="true"></i><span>{{'block-page.previous-block' | translate}}</span>
+                  </button>
+                </ng-container>
+
+                <ng-container *ngFor="let blockId of block.next">
+                  <button type="button" class="btn btn-outline-primary btn-arrow"
+                          (click)="openBlockBySeqno(blockId)">
+                    <span>{{'block-page.next-block' | translate}}</span><i class="fa fa-caret-right"
+                                                                           aria-hidden="true"></i>
+                  </button>
+                </ng-container>
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'common.Date-and-Time' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{(block.info.genUtime | time) | async}}</dd>
+
+              <dt class="col-6 col-md-3">{{'common.ID' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                {{block.id.rootHash | hash}}
+                <button type="button" class="btn btn-outline-primary btn-copy">
+                  <i class="fa fa-copy" aria-hidden="true"></i>
+                </button>
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'common.Workchain' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{block.id.workchain}}</dd>
+
+              <dt class="col-6 col-md-3">{{'common.Shard.1' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{block.id.shard | shard: 'full'}}</dd>
+
+              <dt class="col-6 col-md-3">{{'common.Transactions' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{transactionCount}}</dd>
+
+              <dt class="col-6 col-md-3">{{'common.Messages' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{messageCount}}</dd>
+
+              <dt class="col-6 col-md-3">{{'block-page.prev_key_block_seqno' | translate}}</dt>
+              <dd class="col-6 col-md-9"><a
+                [routerLink]="'/blocks/-1/8000000000000000/' + block.info.prevKeyBlockSeqno">{{block.info.prevKeyBlockSeqno}}</a>
+              </dd>
+            </dl>
+
+            <span class="more-btn cursor-pointer noselect"
+                  [class.open]="moreInfoOpen"
+                  (click)="moreInfoOpen = !moreInfoOpen">
+              {{'block-page.more-information' | translate}}
+              <i class="fa fa fa-caret-down" aria-hidden="true"></i>
+            </span>
+
+            <dl class="row info-list" *ngIf="moreInfoOpen">
+
+              <dt class="col-6 col-md-3">{{'block-page.logical-time' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{block.info.startLt}} - {{block.info.endLt}}</dd>
+
+              <dt class="col-6 col-md-3">{{'block-page.fees-collected' | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <span  [innerHTML]="block.valueFlow.feesCollected.grams | amount"></span>&nbsp;{{'common.TON' | translate}}
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'block-page.Parent.' + decOfNum(parentCount) | translate}}</dt>
+              <dd class="col-6 col-md-9">
+                <ng-template ngFor let-item [ngForOf]="block.previous" let-last>
+                  <a [routerLink]="'/blocks/' + item.rootHash">{{item.rootHash | hash}}</a>
+                  <br *ngIf="!last">
+                </ng-template>
+              </dd>
+
+              <dt class="col-6 col-md-3">{{'block-page.version' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{block.info.version}}</dd>
+
+              <dt class="col-6 col-md-3">{{'block-page.after_merge' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{block.info.afterMerge}}</dd>
+
+              <dt class="col-6 col-md-3">{{'block-page.before_split' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{block.info.beforeSplit}}</dd>
+
+              <dt class="col-6 col-md-3">{{'block-page.after_split' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{block.info.afterSplit}}</dd>
+
+              <dt class="col-6 col-md-3">{{'block-page.want_split' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{block.info.wantSplit}}</dd>
+
+              <dt class="col-6 col-md-3">{{'block-page.want_merge' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{block.info.wantMerge}}</dd>
+
+              <dt class="col-6 col-md-3">{{'block-page.is_key_block' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{block.info.keyBlock}}</dd>
+
+              <dt class="col-6 col-md-3">{{'block-page.vert_seqno' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{block.info.vertSeqno}}</dd>
+
+              <dt class="col-6 col-md-3">{{'block-page.gen_validator_list_hash_short' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{genValidatorListHashShort}}</dd>
+
+              <dt class="col-6 col-md-3">{{'block-page.gen_catchain_seqno' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{block.info.genCatchainSeqno}}</dd>
+
+              <ng-container *ngIf="block.info.notMaster">
+                <dt class="col-6 col-md-3">{{'block-page.min_ref_mc_seqno' | translate}}</dt>
+                <dd class="col-6 col-md-9">
+                  <a [routerLink]="'/blocks/' + block.masterchainId.rootHash">{{block.info.minRefMcSeqno}}</a>
+                </dd>
+              </ng-container>
+
+              <dt class="col-6 col-md-3">{{'block-page.gen_software_version' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{block.info.genSoftware.version}}</dd>
+
+              <dt class="col-6 col-md-3">{{'block-page.gen_software_capabilities' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{genSoftwareCapabilities}}</dd>
+
+              <dt class="col-6 col-md-3">{{'block-page.rand_seed' | translate}}</dt>
+              <dd class="col-6 col-md-9">{{block.blockExtra.randSeed | hash}}</dd>
+            </dl>
+          </div>
+        </section>
+
+        <!--        <section class="table-section">-->
+        <!--          <div class="larg-container">-->
+        <!--            <h2 class="table-section__title">{{'block-page.recover_create_msg' | translate}}</h2>-->
+        <!--            <dl class="row info-list">-->
+        <!--              <dt class="col-6 col-md-3">{{'block-page.msg_type' | translate}}</dt>-->
+        <!--              <dd class="col-6 col-md-9">Immediately</dd>-->
+
+        <!--              <dt class="col-6 col-md-3">{{'block-page.ihr_fee' | translate}}</dt>-->
+        <!--              <dd class="col-6 col-md-9"></dd>-->
+
+        <!--              <dt class="col-6 col-md-3">{{'block-page.in_msg.msg_id' | translate}}</dt>-->
+        <!--              <dd class="col-6 col-md-9">dd75dea0a611c07b43be8e53f3237790a61a9131fa5e8bbaca0d38fd3e78b33d</dd>-->
+
+        <!--              <dt class="col-6 col-md-3">{{'block-page.in_msg.next_addr' | translate}}</dt>-->
+        <!--              <dd class="col-6 col-md-9">0</dd>-->
+
+        <!--              <dt class="col-6 col-md-3">{{'block-page.in_msg.curr_addr' | translate}}</dt>-->
+        <!--              <dd class="col-6 col-md-9">0</dd>-->
+
+        <!--              <dt class="col-6 col-md-3">{{'block-page.in_msg.fwd_fee_remaining' | translate}}</dt>-->
+        <!--              <dd class="col-6 col-md-9">0</dd>-->
+
+        <!--              <dt class="col-6 col-md-3">{{'block-page.in_msg.fwd_fee' | translate}}</dt>-->
+        <!--              <dd class="col-6 col-md-9">0</dd>-->
+
+        <!--              <dt class="col-6 col-md-3">{{'block-page.in_msg.transit_fee' | translate}}</dt>-->
+        <!--              <dd class="col-6 col-md-9"></dd>-->
+
+        <!--              <dt class="col-6 col-md-3">{{'block-page.in_msg.transaction-id' | translate}}</dt>-->
+        <!--              <dd class="col-6 col-md-9">5a215bec221063e840a266b3057af9134e2feb84c4d72c129e0b99848b5ca470</dd>-->
+        <!--            </dl>-->
+        <!--          </div>-->
+        <!--        </section>-->
+
+        <section class="table-section">
+          <div class="larg-container">
+            <h2 class="table-section__title" #valueFlow>{{'block-page.value-flow' | translate}}</h2>
+            <dl class="row info-list">
+              <dt class="col-sm-3">{{'block-page.value-flow.from_prev_blk' | translate}}</dt>
+              <dd class="col-sm-9">
+                <span [innerHTML]="block.valueFlow.fromPrevBlk.grams | amount"></span>&nbsp;{{'common.TON' | translate}}
+              </dd>
+
+              <dt class="col-sm-3">{{'block-page.value-flow.to_next_blk' | translate}}</dt>
+              <dd class="col-sm-9">
+                <span [innerHTML]="block.valueFlow.toNextBlk.grams | amount"></span>&nbsp;{{'common.TON' | translate}}
+              </dd>
+
+              <dt class="col-sm-3">{{'block-page.value-flow.imported' | translate}}</dt>
+              <dd class="col-sm-9">
+                <span [innerHTML]="block.valueFlow.imported.grams | amount"></span>&nbsp;{{'common.TON' | translate}}
+              </dd>
+
+              <dt class="col-sm-3">{{'block-page.value-flow.exported' | translate}}</dt>
+              <dd class="col-sm-9">
+                <span [innerHTML]="block.valueFlow.exported.grams | amount"></span>&nbsp;{{'common.TON' | translate}}
+              </dd>
+
+              <dt class="col-sm-3">{{'block-page.value-flow.fees_collected' | translate}}</dt>
+              <dd class="col-sm-9">
+                <span [innerHTML]="block.valueFlow.feesCollected.grams | amount"></span>&nbsp;{{'common.TON' | translate}}
+              </dd>
+
+              <dt class="col-sm-3">{{'block-page.value-flow.fees_imported' | translate}}</dt>
+              <dd class="col-sm-9">
+                <span [innerHTML]="block.valueFlow.feesImported.grams | amount"></span>&nbsp;{{'common.TON' | translate}}
+              </dd>
+
+              <dt class="col-sm-3">{{'block-page.value-flow.created' | translate}}</dt>
+              <dd class="col-sm-9">
+                <span  [innerHTML]="block.valueFlow.created.grams | amount"></span>&nbsp;{{'common.TON' | translate}}
+              </dd>
+
+              <dt class="col-sm-3">{{'block-page.value-flow.minted' | translate}}</dt>
+              <dd class="col-sm-9">
+                <span [innerHTML]="block.valueFlow.minted.grams | amount"></span>&nbsp;{{'common.TON' | translate}}
+              </dd>
+            </dl>
+          </div>
+        </section>
+
+        <section class="table-section" *ngIf="hasAccountBlocks">
+          <div class="larg-container">
+            <h2 class="table-section__title" #accountBlocks>{{'block-page.account-blocks' | translate}}</h2>
+            <div class="tablewrap">
+              <table class="table table-sm cust-table cust-table--border">
+                <thead>
+                <tr>
+                  <th scope="col">{{'block-page.account-blocks-list.account-block' | translate}}</th>
+                  <th scope="col">{{'block-page.account-blocks-list.account-addr' | translate}}</th>
+                  <th scope="col">{{'block-page.account-blocks-list.old-hash' | translate}}</th>
+                  <th scope="col">{{'block-page.account-blocks-list.new-hash' | translate}}</th>
+                  <th scope="col">{{'block-page.account-blocks-list.transaction-count' | translate}}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let account of block.blockExtra.accounts; let i = index">
+                  <th scope="row">{{'block-page.account-blocks-list-item.account-block' | translate: {index: i} }}</th>
+                  <td>
+                    <ng-container *ngIf="namedAddresses.indexOf(account.addr) !== -1">
+                      <app-account-square [address]="account.addr"></app-account-square>
+                      <a class="like-link" [routerLink]="'/accounts/' + block.id.workchain + ':' + account.addr"
+                         [title]="block.id.workchain + ':' + account.addr | hash">
+                        {{'named-address.' + account.addr | translate}}
+                      </a>
+                    </ng-container>
+                    <ng-container *ngIf="namedAddresses.indexOf(account.addr) === -1">
+                      <app-account-square [address]="account.addr"></app-account-square>
+                      <a class="like-link" [routerLink]="'/accounts/' + block.id.workchain + ':' + account.addr"
+                         [title]="block.id.workchain + ':' + account.addr | hash ">
+                        {{account.addr | address: 5 : block.id.workchain}}
+                      </a>
+                    </ng-container>
+                  </td>
+                  <td [title]="account.stateUpdate.oldHash | hash">{{account.stateUpdate.oldHash | hash: 5}}</td>
+                  <td [title]="account.stateUpdate.newHash | hash">{{account.stateUpdate.newHash | hash: 5}}</td>
+                  <td>{{account.transactionCount}}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="table-section" *ngIf="hasShardHashes">
+          <div class="larg-container">
+            <h2 class="table-section__title" #shardHashes>{{'block-page.shard-hashes' | translate}}</h2>
+            <div class="tablewrap">
+              <table class="table table-sm cust-table cust-table--border">
+                <thead>
+                <tr>
+                  <th scope="col">{{'block-page.shard-hashes-list.shard-hash' | translate}}</th>
+                  <th scope="col">{{'block-page.shard-hashes-list.workchain-and-shard' | translate}}</th>
+                  <th scope="col">{{'block-page.shard-hashes-list.seqno' | translate}}</th>
+                  <th scope="col">{{'block-page.shard-hashes-list.min_ref_mc_seqno' | translate}}</th>
+                  <th scope="col">{{'block-page.shard-hashes-list.logical-time-range' | translate}}</th>
+                  <th scope="col">{{'block-page.shard-hashes-list.root-hash' | translate}}</th>
+                  <th scope="col">{{'block-page.shard-hashes-list.file-hash' | translate}}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let shardHash of block.blockExtra.custom.shardHashes.shards; let i = index">
+                  <th scope="row">{{'block-page.shard-hashes-list-item.shard-hash' | translate: {index: i} }}</th>
+                  <td>0:{{shardHash.id | shard: 'full'}}</td>
+                  <td>{{shardHash.topBlockId.seqno}}</td>
+                  <td>{{shardHash.minRefMcSeqno}}</td>
+                  <td>{{shardHash.startLt}} - {{shardHash.endLt}}</td>
+                  <td><a class="like-link" [title]="shardHash.topBlockId.rootHash | hash"
+                         [routerLink]="'/blocks/' + shardHash.topBlockId.rootHash">{{shardHash.topBlockId.rootHash | hash: 5}}</a>
+                  </td>
+                  <td>
+                    <span [title]="shardHash.topBlockId.fileHash">{{shardHash.topBlockId.fileHash | hash: 5}}</span>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="table-section" *ngIf="hasTransactions">
+          <div class="larg-container">
+            <h2 class="table-section__title" #transactions>{{'common.Transactions' | translate}}
+              <span class="badge badge-secondary badge-pill">{{transactionCount | numberWithSpaces}}{{'common.after-count' | translate}}</span>
+            </h2>
+            <div class="tablewrap">
+              <table class="table table-sm cust-table cust-table--border">
+                <thead>
+                <tr>
+                  <th scope="col">{{'common.ID' | translate}}</th>
+                  <th scope="col">{{'block-page.transactions-list.value-ton' | translate}}</th>
+                  <th scope="col">{{'block-page.transactions-list.time' | translate}}</th>
+                  <th scope="col">{{'block-page.transactions-list.account' | translate}}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let transaction of block.transactions; let i = index">
+                  <td><a class="like-link"
+                         [title]="transaction.hash | hash"
+                         [routerLink]="'/transactions/' + transaction.hash">{{transaction.hash | hash: 5}}</a></td>
+                  <td [innerHTML]="balanceChanges[i] | amount"></td>
+                  <td>{{(transaction.now | time : 'LTS') | async}}</td>
+                  <td>
+                    <ng-container *ngIf="namedAddresses.indexOf(transaction.account) !== -1">
+                      <app-account-square [address]="transaction.account"></app-account-square>
+                      <a class="like-link" [routerLink]="'/accounts/' + block.id.workchain + ':' + transaction.account"
+                         [title]="transaction.workchain + ':' + transaction.account | hash">
+                        {{'named-address.' + transaction.account | translate}}
+                      </a>
+                    </ng-container>
+                    <ng-container *ngIf="namedAddresses.indexOf(transaction.account) === -1">
+                      <app-account-square [address]="transaction.account"></app-account-square>
+                      <a class="like-link" [routerLink]="'/accounts/' + block.id.workchain + ':' + transaction.account"
+                         [title]="transaction.workchain + ':' + transaction.account | hash">
+                        {{transaction.account | address: 5 : transaction.workchain}}
+                      </a>
+                    </ng-container>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+<!--            <div class="d-flex justify-content-between tabfooter table-section__footer">-->
+<!--&lt;!&ndash;              <button type="button" class="btn btn-outline-primary">{{'common.Export-to-csv' | translate}}</button>&ndash;&gt;-->
+<!--              <div></div>-->
+<!--              <div class="d-flex justify-content-between table-section__bar">-->
+<!--                <div class="table-section__bar-title noselect">{{'common.Show-records' | translate}}</div>-->
+<!--                <select class="custom-select" required>-->
+<!--                  <option value="25">25</option>-->
+<!--                  <option value="50">50</option>-->
+<!--                  <option value="75">75</option>-->
+<!--                  <option value="100">100</option>-->
+<!--                </select>-->
+<!--                <button type="button" class="btn btn-outline-primary btn-arrow">-->
+<!--                  <i class="fa fa-caret-left" aria-hidden="true"></i><span>{{'common.Previous-page' | translate}}</span>-->
+<!--                </button>-->
+<!--                <button type="button" class="btn btn-outline-primary btn-arrow">-->
+<!--                  <span>{{'common.Next-page' | translate}}</span><i class="fa fa-caret-right" aria-hidden="true"></i>-->
+<!--                </button>-->
+<!--              </div>-->
+<!--            </div>-->
+          </div>
+        </section>
+
+        <section class="table-section" *ngIf="hasMessages">
+          <div class="larg-container">
+            <h2 class="table-section__title" #messages>
+              {{'common.Messages' | translate}}
+              <span class="badge badge-secondary badge-pill">{{messageCount | numberWithSpaces}}{{'common.after-count' | translate}}</span>
+            </h2>
+
+            <ng-container *ngIf="messagesIn.length > 0">
+              <h3 class="table-section__subtitle">{{'block-page.messages-list.incoming' | translate}}</h3>
+              <div class="tablewrap">
+                <table class="table table-sm cust-table cust-table--border">
+                  <thead>
+                  <tr>
+                    <th scope="col">{{'block-page.messages-list.message-id' | translate}}</th>
+                    <th scope="col">{{'block-page.messages-list.transaction-id' | translate}}</th>
+                    <th scope="col">{{'block-page.messages-list.value-ton' | translate}}</th>
+                    <th scope="col">{{'block-page.messages-list.type' | translate}}</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let message of messagesIn">
+                    <td>
+                      <a class="like-link" [title]="message.hash | hash"
+                         [routerLink]="'/transactions/' + message.transactionHash + '/in'">
+                        {{message.hash | hash: 5}}
+                      </a>
+                    </td>
+                    <td><a class="like-link" [title]="message.transactionHash | hash"
+                           [routerLink]="'/transactions/' + message.transactionHash">{{message.transactionHash | hash: 5}}</a>
+                    </td>
+                    <td [innerHTML]="message.info?.value ? (message.info.value | amount) : '-'"></td>
+                    <td>{{'message-type.' + message.info.kind | translate}}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="d-flex justify-content-between tabfooter table-section__footer">
+<!--                <button type="button" class="btn btn-outline-primary">{{'common.Export-to-csv' | translate}}</button>-->
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="messagesOut.length > 0">
+              <h2 class="table-section__subtitle">{{'block-page.messages-list.outgoing' | translate}}</h2>
+              <div class="tablewrap">
+                <table class="table table-sm cust-table cust-table--border">
+                  <thead>
+                  <tr>
+                    <th scope="col">{{'block-page.messages-list.message-id' | translate}}</th>
+                    <th scope="col">{{'block-page.messages-list.transaction-id' | translate}}</th>
+                    <th scope="col">{{'block-page.messages-list.value-ton' | translate}}</th>
+                    <th scope="col">{{'block-page.messages-list.type' | translate}}</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let message of messagesOut; let i = index">
+                    <td>
+                      <a class="like-link" [title]="message.hash | hash" [routerLink]="'/transactions/' + message.transactionHash + '/out/' + i">
+                        {{message.hash | hash: 5}}
+                      </a>
+                    </td>
+                    <td><a class="like-link" [title]="message.transactionHash | hash"
+                           [routerLink]="'/transactions' + message.transactionHash">{{message.transactionHash | hash: 5}}</a>
+                    </td>
+                    <td [innerHTML]="message.info?.value ? (message.info.value | amount) : '-'"></td>
+                    <td>{{'message-type.' + message.info.kind | translate}}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+
+<!--              <div class="d-flex justify-content-between tabfooter table-section__footer">-->
+<!--&lt;!&ndash;                <button type="button" class="btn btn-outline-primary">{{'common.Export-to-csv' | translate}}</button>&ndash;&gt;-->
+<!--                <div></div>-->
+<!--                <div class="d-flex justify-content-between table-section__bar">-->
+<!--                  <div class="table-section__bar-title noselect">{{'common.Show-records' | translate}}</div>-->
+<!--                  <select class="custom-select" required>-->
+<!--                    <option value="25">25</option>-->
+<!--                    <option value="50">50</option>-->
+<!--                    <option value="75">75</option>-->
+<!--                    <option value="100">100</option>-->
+<!--                  </select>-->
+<!--                  <button type="button" class="btn btn-outline-primary btn-arrow">-->
+<!--                    <i class="fa fa-caret-left"-->
+<!--                       aria-hidden="true"></i><span>{{'common.Previous-page' | translate}}</span>-->
+<!--                  </button>-->
+<!--                  <button type="button" class="btn btn-outline-primary btn-arrow">-->
+<!--                    <span>{{'common.Next-page' | translate}}</span><i class="fa fa-caret-right" aria-hidden="true"></i>-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--              </div>-->
+            </ng-container>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+<ng-container *ngIf="error === 404">
+  <h1>404</h1>
+</ng-container>

@@ -1,0 +1,106 @@
+<section class="table-section" *ngIf="transactions">
+  <div class="larg-container">
+    <h2 class="table-section__title" *ngIf="showHeader">
+      {{'stakes-list.stake-actions' | translate}}
+      <span class="badge badge-secondary badge-pill">{{count | numberWithSpaces}}{{'common.after-count' | translate}}</span>
+    </h2>
+    <div class="tablewrap">
+      <div role="alert"
+           *ngIf="newCount && newCount > 0"
+           class="has-new alert alert-primary"
+           (click)="loadData(true)"
+           [translate]="'transactions.new-items-found'" [translateParams]="{newCount: newCount}"></div>
+      <table class="table table-sm cust-table cust-table--border">
+        <thead>
+        <tr>
+          <th scope="col" *ngIf="!electionTime">{{'validators.Elections' | translate}}</th>
+          <th scope="col" *ngIf="!account">{{'common.Validator.1' | translate}}</th>
+<!--          <th scope="col">{{'common.Transaction.1' | translate}}</th>-->
+          <th scope="col">{{'common.Type' | translate}}</th>
+          <th scope="col">{{'message-page.value' | translate}}</th>
+          <th scope="col">{{'messages.date-n-time' | translate}}</th>
+          <th scope="col" *ngIf="!electionTime">{{'validators.public-key' | translate}}</th>
+          <th scope="col" *ngIf="!electionTime">{{'validators.adnl-address' | translate}}</th>
+        </tr>
+        </thead>
+        <tbody [class.loading]="loading">
+        <tr *ngFor="let transaction of transactions; let i = index">
+          <td *ngIf="!electionTime">
+            <span *ngIf="transaction.electionTime">{{(transaction.electionTime | time: 'llll') | async}}</span>
+            <ng-container *ngIf="!transaction.electionTime">
+              &ndash;
+            </ng-container>
+          </td>
+          <td *ngIf="!account">
+            <app-account-square [address]="transaction.accountAddress"></app-account-square>
+            <a class="like-link"
+               [routerLink]="'/validators/' + transaction.accountWorkchain + ':' + transaction.accountAddress"
+               [title]="transaction.accountWorkchain + ':' + transaction.accountAddress | hash">
+              {{transaction.accountAddress | address: 5 : transaction.accountWorkchain}}
+            </a>
+          </td>
+          <td>
+            <a class="like-link" [routerLink]="'/transactions/' + transaction.transactionHash">
+              {{'stake-transaction-type.' + transaction.transactionType | translate}}
+            </a>
+          </td>
+          <td>
+              <span [innerHTML]="transaction.value | amount"></span>
+          </td>
+          <td>
+            <span *ngIf="transaction.time">{{(transaction.time | time: 'lll') | async}}</span>
+          </td>
+          <td *ngIf="!electionTime">
+            <ng-container *ngIf="transaction.publicKey">
+              <span [title]="transaction.publicKey | hash">{{transaction.publicKey | hash: 3}}</span>&nbsp;<!--
+            --><button type="button" class="btn btn-sm btn-outline-primary btn-copy"
+                      ngxClipboard [cbContent]="transaction.publicKey | hash">
+                <i class="fa fa-copy fa-xs" aria-hidden="true"></i>
+              </button>
+            </ng-container>
+            <ng-container *ngIf="!transaction.publicKey">
+              &ndash;
+            </ng-container>
+          </td>
+          <td *ngIf="!electionTime">
+            <ng-container *ngIf="transaction.adnl">
+              <span [title]="transaction.adnl | hash">{{transaction.adnl | hash: 3}}</span>&nbsp;<!--
+            --><button type="button" class="btn btn-sm btn-outline-primary btn-copy"
+                      ngxClipboard [cbContent]="transaction.adnl | hash">
+                <i class="fa fa-copy fa-xs" aria-hidden="true"></i>
+              </button>
+            </ng-container>
+            <ng-container *ngIf="!transaction.adnl">
+              &ndash;
+            </ng-container>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-between tabfooter table-section__footer">
+      <button type="button" class="btn btn-outline-primary" (click)="exportCsv()">
+        {{'common.Export-to-csv' | translate}}
+      </button>
+      <div class="d-flex justify-content-between table-section__bar">
+        <div class="table-section__bar-title">{{'paging.page-size' | translate}}</div>
+        <select class="custom-select" [(ngModel)]="pageSize" (change)="changePageSize()">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+        <button type="button" class="btn btn-outline-primary btn-arrow" [disabled]="page <= 1" (click)="prevPage()">
+          <i class="fa fa-caret-left" aria-hidden="true"></i>
+          <span>{{'paging.previous-page' | translate}}</span>
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-arrow" [disabled]="!hasNextPage()" (click)="nextPage()">
+          <span>{{'paging.next-page' | translate}}</span>
+          <i class="fa fa-caret-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

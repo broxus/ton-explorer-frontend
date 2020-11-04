@@ -1,0 +1,82 @@
+<div class="wrapper">
+  <app-header></app-header>
+  <main class="main">
+    <section class="border-bottom search-header">
+      <div class="d-flex justify-content-between search-sec-form search-sec-form--long">
+        <app-search-field></app-search-field>
+      </div>
+    </section>
+    <div class="page">
+      <div class="page__top noselect">
+        <div class="larg-container">
+          <nav class="page-breadcrumbs">
+            <a routerLink="/">{{'breadcrumbs.main-page' | translate}}</a>
+            <i class="fa fa-caret-right" aria-hidden="true"></i>
+            <span>{{'common.Validators' | translate}}</span>
+          </nav>
+          <h1 class="page-title">{{'common.Validators' | translate}}</h1>
+        </div>
+      </div>
+
+      <nav class="border-bottom nav-block noselect">
+        <div class="larg-container">
+          <ul class="nav nav-tabs">
+            <li class="nav-item" *ngIf="state?.previous">
+                <span class="cursor-pointer nav-link" [className]="{'active': selectedSet === 'previous'}"
+                      (click)="selectValidators('previous')">
+                  {{'common.Previous' | translate}}
+                </span>
+            </li>
+            <li class="nav-item" *ngIf="state?.current">
+              <span class="cursor-pointer nav-link" [className]="{'active': selectedSet === 'current'}"
+                    (click)="selectValidators('current')">
+                {{'common.Current' | translate}}
+              </span>
+            </li>
+            <li class="nav-item" *ngIf="state?.next || state?.nextStakes">
+              <span class="cursor-pointer nav-link" [className]="{'active': selectedSet === 'next'}"
+                    (click)="selectValidators('next')">
+                {{'common.Next' | translate}}
+              </span>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="border-bottom section counters">
+        <div class="larg-container">
+          <ul class="d-flex justify-content-between counters__wrap">
+            <li class="counters__item counters__item--4">
+              <span *ngIf="currentLang === 'ko'">{{'validators.Elections-start' | translate}}</span>
+              <b *ngIf="validatorSet">{{((validatorSet.utimeUntil - state.timings.electionsStartBefore) | time: 'lll') | async}}</b>
+              <b *ngIf="!validatorSet" class="noselect">--</b>
+              <span *ngIf="currentLang === 'en'">{{'validators.Elections-start' | translate}}</span>
+            </li>
+
+            <li class="counters__item counters__item--4">
+              <span *ngIf="currentLang === 'ko'">{{'validators.Elections-end' | translate}}</span>
+              <b *ngIf="validatorSet">{{((validatorSet.utimeUntil - state.timings.electionsEndBefore) | time: 'lll') | async}}</b>
+              <b *ngIf="!validatorSet" class="noselect">--</b>
+              <span *ngIf="currentLang === 'en'">{{'validators.Elections-end' | translate}}</span>
+            </li>
+
+            <li class="counters__item counters__item--4">
+              <span *ngIf="currentLang === 'ko'">{{'validators.Elections-status' | translate}}</span>
+              <b *ngIf="electionsStatus != null">
+                {{'validators-list-page.elections-status.' + electionsStatus | translate}}
+              </b>
+              <b *ngIf="electionsStatus == null" class="noselect">--</b>
+              <span *ngIf="currentLang === 'en'">{{'validators.Elections-status' | translate}}</span>
+            </li>
+
+          </ul>
+        </div>
+      </div>
+
+      <div class="page__main">
+        <app-validators [validatorSet]="validatorSet" [electionsStats]="electionsStats"
+                        [participants]="participants[selectedSet]" pageSize="20" [showHeader]="true"></app-validators>
+      </div>
+    </div>
+  </main>
+</div>

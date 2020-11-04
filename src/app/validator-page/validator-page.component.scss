@@ -1,0 +1,29 @@
+
+.btn-copy {
+  padding: 0 6px;
+  height: 24px;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.normal-first-child-padding {
+  .cust-table{
+    thead tr th{
+      &:first-child{padding-left: 12px;}
+    }
+    tbody tr th,
+    tbody tr td{
+      &:first-child{padding-left: 12px;}
+    }
+    &--border{
+      tbody tr th,
+      tbody tr td{
+        &:first-child{padding-left: 12px;}
+      }
+    }
+  }
+}

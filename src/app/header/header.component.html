@@ -1,0 +1,46 @@
+<header class="header noselect">
+  <div class="d-flex justify-content-between header__wrap">
+    <a routerLink="/" class="d-flex justify-content-start logo">
+      <img src="./assets/img/svg/ton.svg" width="20" height="16">
+      <span class="logo__txt">{{'header.logo' | translate}}</span>
+    </a>
+    <div class="d-flex justify-content-between header__main" [class.open]="mobileMenuOpened">
+      <div class="header__drop dropdown">
+      </div>
+      <div class="d-flex justify-content-start header__right">
+        <ul class="nav justify-content-end header-nav">
+          <li class="nav-item">
+            <a routerLink="/blocks" class="nav-link active">{{'common.Blocks' | translate}}</a>
+          </li>
+          <li class="nav-item">
+            <a routerLink="/transactions" class="nav-link">{{'common.Transactions' | translate}}</a>
+          </li>
+          <li class="nav-item">
+            <a routerLink="/messages" class="nav-link">{{'common.Messages' | translate}}</a>
+          </li>
+          <li class="nav-item">
+            <a routerLink="/accounts" class="nav-link">{{'common.Accounts' | translate}}</a>
+          </li>
+          <li class="nav-item">
+            <a routerLink="/validators" class="nav-link">{{'common.Validators' | translate}}</a>
+          </li>
+          <li class="nav-item" *ngIf="!userInfo && environment.authBot">
+            <a routerLink="/auth" class="nav-link text-primary">{{'common.Sign-In' | translate}}</a>
+          </li>
+          <li class="nav-item" *ngIf="userInfo && environment.authBot">
+            <a routerLink="/profile" class="nav-link text-primary" disabled>
+              <span *ngIf="userInfo.username">@{{userInfo.username}}</span>
+              <span *ngIf="!userInfo.username">{{userInfo.firstName}} {{userInfo.lastName}}</span>
+            </a>
+          </li>
+        </ul>
+        <app-language-select></app-language-select>
+      </div>
+    </div>
+    <button class="btn burger" [class.open]="mobileMenuOpened" (click)="mobileMenuOpened = !mobileMenuOpened;">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</header>

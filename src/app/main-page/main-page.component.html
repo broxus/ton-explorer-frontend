@@ -1,0 +1,478 @@
+<div class="wrapper">
+  <app-header></app-header>
+  <main class="main">
+    <section class="top-sec">
+      <div class="container">
+        <h1 class="top-sec__title">{{'main-page.freeton-title' | translate}}</h1>
+        <div class="d-flex justify-content-between top-sec__wrap search-sec-form">
+          <app-search-field></app-search-field>
+        </div>
+      </div>
+    </section>
+    <section class="border-bottom section counters">
+      <div class="container">
+        <ul class="d-flex justify-content-center counters__wrap">
+          <li class="counters__item counters__item--6">
+            <span *ngIf="currentLang === 'ko'">{{'main-page.counters.head-block' | translate}}</span>
+            <b *ngIf="stats">{{stats.maxSeqno | numberWithSpaces}}{{'main-page.after-blocks-height' | translate}}</b>
+            <b *ngIf="!stats">--</b>
+            <span *ngIf="currentLang === 'en'">{{'main-page.counters.head-block' | translate}}</span>
+          </li>
+          <li class="counters__item counters__item--6">
+            <span *ngIf="currentLang === 'ko'">{{'common.Transactions' | translate}}</span>
+            <b *ngIf="stats">{{stats.counts.TOTAL.transactions | numberWithSpaces}}{{'common.after-count' | translate}}</b>
+            <b *ngIf="!stats">--</b>
+            <span *ngIf="currentLang === 'en'">{{'common.Transactions' | translate}}</span>
+          </li>
+          <li class="counters__item counters__item--6">
+            <span *ngIf="currentLang === 'ko'">{{'common.Messages' | translate}}</span>
+            <b *ngIf="stats">{{stats.counts.TOTAL.messages | numberWithSpaces}}{{'common.after-count' | translate}}</b>
+            <b *ngIf="!stats">--</b>
+            <span *ngIf="currentLang === 'en'">{{'common.Messages' | translate}}</span>
+          </li>
+          <li class="counters__item counters__item--6">
+            <span *ngIf="currentLang === 'ko'">{{'common.Accounts' | translate}}</span>
+            <b *ngIf="stats">{{stats.counts.TOTAL.accountsCreated | numberWithSpaces}}{{'common.after-count' | translate}}</b>
+            <b *ngIf="!stats">--</b>
+            <span *ngIf="currentLang === 'en'">{{'common.Accounts' | translate}}</span>
+          </li>
+          <li class="counters__item counters__item--6">
+            <span *ngIf="currentLang === 'ko'">{{'common.Volume-24h' | translate}}</span>
+            <b *ngIf="volume24">{{volume24 | numberWithSpaces}}&nbsp;{{'common.TON' | translate}}</b>
+            <b *ngIf="!volume24">--</b>
+            <span *ngIf="currentLang === 'en'">{{'common.Volume-24h' | translate}}</span>
+          </li>
+          <li class="counters__item counters__item--6">
+            <span *ngIf="currentLang === 'ko'">{{'common.Total-supply' | translate}}</span>
+            <b *ngIf="totalSupply">
+              {{totalSupply | numberWithSpaces}}&nbsp;{{'common.TON' | translate}}
+            </b>
+            <b *ngIf="!totalSupply">--</b>
+            <span *ngIf="currentLang === 'en'">{{'common.Total-supply' | translate}}</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+    <section class="index-main">
+      <div class="larg-container">
+        <div class="row index-main__wrap">
+
+          <div class="col-12 col-xl-6 index-main__item">
+            <h2 class="index-main__title clearfix noselect">
+              <span *ngIf="tps && tps > 0" class="badge badge-light badge-pill float-right">
+                <ng-container *ngIf="currentLang === 'ko'">{{'common.per-second.short' | translate}}</ng-container>
+                {{tps}}{{'common.after-count' | translate}}<!--
+                --><ng-container *ngIf="currentLang === 'en'">{{'common.per-second.short' | translate}}</ng-container>
+              </span>
+              {{'main-page.latest-transactions' | translate}}
+            </h2>
+            <div class="tablewrap index-main__tablewrap">
+              <table class="table table-borderless table-sm cust-table index-main__table">
+                <thead>
+                <tr>
+                  <th scope="col">{{'common.ID' | translate}}</th>
+                  <th scope="col">{{'main-page.latest-transactions.transaction-type' | translate}}</th>
+                  <th scope="col">{{'common.Account.1' | translate}}</th>
+                  <th scope="col">{{'main-page.latest-transactions.balance-change' | translate}}</th>
+                </tr>
+                </thead>
+                <tbody *ngIf="transactions">
+                <tr *ngFor="let transaction of transactions">
+                  <td><a class="like-link" [routerLink]="'/transactions/' + transaction.hash"
+                         [title]="transaction.hash | hash">{{transaction.hash | hash: 5}}</a>
+                  </td>
+                  <td>
+                    <ng-container *ngIf="transaction.transactionType === 'tick_tok'">
+                      <span
+                        class="color-gray-400">{{'transaction-type.' + transaction.transactionType + '.' + transaction.isTock | translate}}</span>
+                    </ng-container>
+                    <ng-container *ngIf="transaction.transactionType !== 'tick_tok'">
+                      {{'transaction-type.' + transaction.transactionType | translate}}
+                    </ng-container>
+                  </td>
+                  <td>
+                    <ng-container *ngIf="namedAddresses.indexOf(transaction.accountId) !== -1">
+                      <app-account-square [address]="transaction.accountId"></app-account-square>
+                      <a class="like-link"
+                         [routerLink]="'/accounts/' + transaction.workchain + ':' + transaction.accountId"
+                         [title]="transaction.workchain + ':' + transaction.accountId | hash">
+                        {{'named-address.' + transaction.accountId | translate}}
+                      </a>
+                    </ng-container>
+                    <ng-container *ngIf="namedAddresses.indexOf(transaction.accountId) === -1">
+                      <app-account-square [address]="transaction.accountId"></app-account-square>
+                      <a class="like-link"
+                         [routerLink]="'/accounts/' + transaction.workchain + ':' + transaction.accountId"
+                         [title]="transaction.workchain + ':' + transaction.accountId | hash">
+                        {{transaction.accountId | address : 3 : transaction.workchain}}
+                      </a>
+                    </ng-container>
+                  </td>
+                  <td>
+                    <span *ngIf="transaction.balanceChange && transaction.balanceChange > 0">+</span><!--
+                       --><span *ngIf="transaction.balanceChange"
+                                [innerHTML]="transaction.balanceChange | amount"></span>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="index-main__bar clearfix w-100 noselect">
+              <div class="reload-btn cursor-pointer float-right" (click)="load()">
+                <span class="color-gray-400">{{(loadedAt | time : 'LTS') | async}}</span>
+                <i class="fa fa-sync-alt"></i>
+              </div>
+              <div class="mr-2 float-right">
+                <label for="showTickTocks" class="cursor-pointer">
+                  <input type="checkbox" id="showTickTocks"
+                         [(ngModel)]="showTickTok" (change)="load()">&nbsp;{{'transaction-type.tick_tok' | translate}}
+                </label>&nbsp;
+                <label for="showElectorTransactions" class="cursor-pointer">
+                  <input type="checkbox" id="showElectorTransactions"
+                         [(ngModel)]="showElectorTransactions"
+                         (change)="load()">&nbsp;{{'named-address.Elector' | translate}}
+                </label>
+              </div>
+              <a routerLink="/transactions"
+                 class="btn btn-primary">{{'main-page.latest-transactions.view-all' | translate}}</a>
+              <!--              <button type="button" class="btn btn-outline-primary">Export to .csv</button>-->
+            </div>
+          </div>
+
+          <div class="col-12 col-xl-6 index-main__item">
+            <h2 class="index-main__title clearfix noselect">
+              <span class="badge badge-light badge-pill float-right" *ngIf="mps && mps > 0">
+                <ng-container *ngIf="currentLang === 'ko'">{{'common.per-second.short' | translate}}</ng-container>
+                {{mps}}{{'common.after-count' | translate}}<!--
+                --><ng-container *ngIf="currentLang === 'en'">{{'common.per-second.short' | translate}}</ng-container>
+              </span>
+              {{'main-page.latest-messages' | translate}}
+            </h2>
+            <div class="tablewrap index-main__tablewrap">
+              <table class="table table-borderless table-sm cust-table index-main__table">
+                <thead>
+                <tr>
+                  <th scope="col">{{'main-page.latest-messages.body-hash' | translate}}</th>
+                  <th scope="col">{{'main-page.latest-messages.direction' | translate}}</th>
+                  <th scope="col">{{'main-page.latest-messages.value-ton' | translate}}</th>
+                  <th scope="col">{{'common.Transaction.1' | translate}}</th>
+                </tr>
+                </thead>
+                <tbody *ngIf="messages">
+                <tr *ngFor="let message of messages">
+                  <td>
+                    <a
+                      [routerLink]="'/transactions/' + message.transactionHash + '/' + (message.out ? '/out/' + message.n : '/in')"
+                      class="like-link" [title]="message.bodyHash | hash">
+                      {{message.bodyHash | hash : 5}}
+                    </a>
+                  </td>
+                  <td>
+                    <ng-container *ngIf="!message.srcAddress">
+                      <div style="width: 16px; height: 16px; display: inline-block;"></div>
+                    </ng-container>
+                    <ng-container *ngIf="message.srcAddress">
+                      <a class="like-link" [routerLink]="'/accounts/' + message.srcWorkchain + ':' + message.srcAddress"
+                         [title]="message.srcWorkchain + ':' + message.srcAddress | hash">
+                        <app-account-square [address]="message.srcAddress"></app-account-square>
+                      </a>
+                    </ng-container>
+                    <i class="fa fa-arrow-right" *ngIf="message.srcAddress || message.dstAddress"
+                       style="vertical-align: middle; margin: 0 4px;"></i>
+                    <ng-container *ngIf="message.dstAddress">
+                      <a class="like-link" [routerLink]="'/accounts/' + message.dstWorkchain + ':' + message.dstAddress"
+                         [title]="message.dstWorkchain + ':' + message.dstAddress | hash">
+                        <app-account-square [address]="message.dstAddress"></app-account-square>
+                      </a>
+                    </ng-container>
+                  </td>
+                  <td><span [ngClass]="{'zero': message.value == null}"
+                            [innerHTML]="message.value != null ? (message.value | amount) : '-'"></span></td>
+                  <td><a class="like-link" [routerLink]="'/transactions/' + message.transactionHash"
+                         [title]="message.transactionHash">{{message.transactionHash | hash : 3}}</a>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="index-main__bar clearfix w-100 noselect">
+              <div class="reload-btn cursor-pointer float-right" (click)="load()">
+                <span class="color-gray-400">{{(loadedAt | time : 'LTS') | async}}</span>
+                <i class="fa fa-sync-alt"></i>
+              </div>
+              <div class="mr-2 float-right">
+                <label for="showElector" class="cursor-pointer">
+                  <input type="checkbox" id="showElector"
+                         [(ngModel)]="showElectorMessages"
+                         (change)="load()">&nbsp;{{'named-address.Elector' | translate}}
+                </label>
+              </div>
+              <a routerLink="/messages" class="btn btn-primary">{{'main-page.latest-messages.view-all' | translate}}</a>
+              <!--              <button type="button" class="btn btn-outline-primary">Export to .csv</button>-->
+            </div>
+          </div>
+
+          <div class="col-12 col-xl-6 index-main__item">
+            <h2 class="index-main__title clearfix noselect">
+              <span class="badge badge-light badge-pill float-right ml-1" *ngIf="stats">
+                <ng-container *ngIf="currentLang === 'ko'">{{'common.in-last-24-hours' | translate}}<br></ng-container>
+                {{stats.counts.D1.accountsCreated | numberWithSpaces}}{{'common.after-count' | translate}}
+                <ng-container *ngIf="currentLang === 'en'">{{'common.in-last-24-hours' | translate}}</ng-container>
+              </span>
+              <span class="badge badge-light badge-pill float-right" *ngIf="stats">
+                <ng-container *ngIf="currentLang === 'ko'">{{'common.in-last-1-hour' | translate}}<br></ng-container>
+                {{stats.counts.H1.accountsCreated | numberWithSpaces}}{{'common.after-count' | translate}}
+                <ng-container *ngIf="currentLang === 'en'">{{'common.in-last-1-hour' | translate}}</ng-container>
+              </span>
+              {{'main-page.new-accounts' | translate}}
+            </h2>
+            <div class="tablewrap index-main__tablewrap">
+              <table class="table table-borderless table-sm cust-table index-main__table">
+                <thead>
+                <tr>
+                  <th scope="col">{{'main-page.new-accounts.address' | translate}}</th>
+                  <th scope="col">{{'main-page.new-accounts.balance-ton' | translate}}</th>
+                  <th scope="col">{{'main-page.new-accounts.created' | translate}}&nbsp;&uarr;</th>
+                </tr>
+                </thead>
+                <tbody *ngIf="createdAccounts">
+                <tr *ngFor="let account of createdAccounts">
+                  <td>
+                    <app-account-square [address]="account.address"></app-account-square>&nbsp;
+                    <a class="like-link" [routerLink]="'/accounts/' + account.workchain + ':' + account.address"
+                       [title]="account.workchain + ':' + account.address | hash">
+                      {{account.address | address : 5 : account.workchain}}
+                    </a>
+                  </td>
+                  <td><span [innerHTML]="account.balance | amount"></span></td>
+                  <td>{{(account.created | time : 'LT') | async}}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="index-main__bar clearfix w-100 noselect">
+              <div class="reload-btn cursor-pointer float-right" (click)="load()">
+                <span class="color-gray-400">{{(loadedAt | time : 'LTS') | async}}</span>
+                <i class="fa fa-sync-alt"></i>
+              </div>
+              <a routerLink="/accounts" class="btn btn-primary">{{'main-page.new-accounts.view-all' | translate}}</a>
+              <!--              <button type="button" class="btn btn-outline-primary">Export to .csv</button>-->
+            </div>
+          </div>
+
+          <div class="col-12 col-xl-6 index-main__item">
+            <h2 class="index-main__title clearfix noselect">
+              <span class="badge badge-light badge-pill float-right ml-1" *ngIf="stats">
+                <ng-container *ngIf="currentLang === 'ko'">{{'common.in-last-24-hours' | translate}}<br></ng-container>
+                {{stats.counts.D1.accountsActive | numberWithSpaces}}{{'common.after-count' | translate}}
+                <ng-container *ngIf="currentLang === 'en'">{{'common.in-last-24-hours' | translate}}</ng-container>
+              </span>
+              <span class="badge badge-light badge-pill float-right" *ngIf="stats">
+                <ng-container *ngIf="currentLang === 'ko'">{{'common.in-last-1-hour' | translate}}<br></ng-container>
+                {{stats.counts.H1.accountsActive | numberWithSpaces}}{{'common.after-count' | translate}}
+                <ng-container *ngIf="currentLang === 'en'">{{'common.in-last-1-hour' | translate}}</ng-container>
+              </span>
+              {{'main-page.active-accounts' | translate}}
+            </h2>
+            <div class="tablewrap index-main__tablewrap">
+              <table class="table table-borderless table-sm cust-table index-main__table">
+                <thead>
+                <tr>
+                  <th scope="col">{{'main-page.new-accounts.address' | translate}}</th>
+                  <th scope="col">{{'main-page.new-accounts.balance-ton' | translate}}</th>
+                  <th scope="col">{{'main-page.active-accounts.updated' | translate}}&nbsp;&uarr;</th>
+                </tr>
+                </thead>
+                <tbody *ngIf="createdAccounts">
+                <tr *ngFor="let account of updatedAccounts">
+                  <td>
+                    <app-account-square [address]="account.address"></app-account-square>&nbsp;
+                    <ng-container *ngIf="namedAddresses.indexOf(account.address) !== -1">
+                      <a class="like-link" [routerLink]="'/accounts/' + account.workchain + ':' + account.address"
+                         [title]="account.workchain + ':' + account.address | hash">
+                        {{'named-address.' + account.address | translate}}
+                      </a>
+                    </ng-container>
+                    <ng-container *ngIf="namedAddresses.indexOf(account.address) === -1">
+                      <a class="like-link" [routerLink]="'/accounts/' + account.workchain + ':' + account.address"
+                         [title]="account.workchain + ':' + account.address | hash">
+                        {{account.address | address : 5 : account.workchain}}
+                      </a>
+                    </ng-container>
+                  </td>
+                  <td><span [innerHTML]="account.balance | amount"></span></td>
+                  <td>{{(account.updated | time : 'LT') | async}}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="index-main__bar clearfix w-100 noselect">
+              <div class="reload-btn cursor-pointer float-right" (click)="load()">
+                <span class="color-gray-400">{{(loadedAt | time : 'LTS') | async}}</span>
+                <i class="fa fa-sync-alt"></i>
+              </div>
+              <a routerLink="/accounts" class="btn btn-primary">{{'main-page.active-accounts.view-all' | translate}}</a>
+              <!--              <button type="button" class="btn btn-outline-primary">Export to .csv</button>-->
+            </div>
+          </div>
+
+
+
+
+
+
+
+
+
+
+          <div class="col-12 col-xl-6 index-main__item">
+            <h2 class="index-main__title clearfix noselect">
+              {{'main-page.current-validators' | translate}}
+            </h2>
+            <div class="tablewrap index-main__tablewrap">
+              <table class="table table-borderless table-sm cust-table index-main__table">
+                <thead>
+                <tr>
+                  <th scope="col">{{'common.Validator.1' | translate}}</th>
+                  <th scope="col">{{'validators.weight' | translate}}&nbsp;&uarr;</th>
+                  <th scope="col">{{'validators-list-page.bonuses' | translate}}&nbsp;({{'common.TON' | translate}})</th>
+                </tr>
+                </thead>
+                <tbody *ngIf="validatorsState?.current?.list && validatorsAddresses">
+                <tr *ngFor="let validator of validatorsState.current.list.slice(0,10)">
+                  <td>
+                    <app-account-square
+                      [address]="validatorsAddresses[validator.publicKey].address"></app-account-square>&nbsp;
+                    <a class="like-link"
+                       [routerLink]="'/validators/' + validatorsAddresses[validator.publicKey].workchain + ':' + validatorsAddresses[validator.publicKey].address"
+                       [title]="validatorsAddresses[validator.publicKey].workchain + ':' + validatorsAddresses[validator.publicKey].address | hash">
+                      {{validatorsAddresses[validator.publicKey].address | address : 5 : validatorsAddresses[validator.publicKey].workchain}}
+                    </a>
+                  </td>
+                  <td [title]="computeWeight(validator).mul(100) + '%'">{{computeWeight(validator).mul(100).toFixed(4)}}%</td>
+                  <td [innerHTML]="computeBonuses(validator) | amount"></td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="index-main__bar clearfix w-100 noselect">
+              <div class="reload-btn cursor-pointer float-right" (click)="load()">
+                <span class="color-gray-400">{{(loadedAt | time : 'LTS') | async}}</span>
+                <i class="fa fa-sync-alt"></i>
+              </div>
+              <a routerLink="/validators" class="btn btn-primary">{{'main-page.validators.view-all' | translate}}</a>
+            </div>
+          </div>
+
+
+
+
+
+
+
+
+
+          <div class="col-12 col-xl-6 index-main__item">
+            <h2 class="index-main__title clearfix noselect">
+              {{'main-page.latest-stake-actions' | translate}}
+            </h2>
+
+            <div class="tablewrap index-main__tablewrap">
+              <table class="table table-borderless table-sm cust-table index-main__table">
+                <thead>
+                <tr>
+                  <th scope="col">{{'common.Validator.1' | translate}}</th>
+                  <th scope="col">{{'common.Type' | translate}}</th>
+                  <th scope="col">{{'message-page.value' | translate}}</th>
+                </tr>
+                </thead>
+                <tbody *ngIf="transactions">
+                <tr *ngFor="let transaction of stakeTransactions">
+                  <td>
+                    <app-account-square [address]="transaction.accountAddress"></app-account-square>
+                    <a class="like-link"
+                       [routerLink]="'/validators/' + transaction.accountWorkchain + ':' + transaction.accountAddress"
+                       [title]="transaction.accountWorkchain + ':' + transaction.accountAddress | hash">
+                      {{transaction.accountAddress | address: 5 : transaction.accountWorkchain}}
+                    </a>
+                  </td>
+                  <td>
+                    <a class="like-link" [routerLink]="'/transactions/' + transaction.transactionHash">
+                      {{'stake-transaction-type.' + transaction.transactionType | translate}}
+                    </a>
+                  </td>
+                  <td>
+                    <span [innerHTML]="transaction.value | amount"></span>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="index-main__bar clearfix w-100 noselect">
+              <div class="reload-btn cursor-pointer float-right" (click)="load()">
+                <span class="color-gray-400">{{(loadedAt | time : 'LTS') | async}}</span>
+                <i class="fa fa-sync-alt"></i>
+              </div>
+              <a routerLink="/stake-actions"
+                 class="btn btn-primary">{{'main-page.latest-stake-actions.view-all' | translate}}</a>
+            </div>
+
+            <div></div>
+          </div>
+
+          <div class="col-12 col-xl-6 index-main__item">
+            <h2 class="index-main__title noselect">{{'main-page.latest-blocks' | translate}}</h2>
+            <div class="tablewrap index-main__tablewrap">
+              <table class="table table-borderless table-sm cust-table index-main__table">
+                <thead>
+                <tr>
+                  <th scope="col">{{'common.ID' | translate}}</th>
+                  <th scope="col">{{'main-page.latest-blocks.shard-n-height' | translate}}</th>
+                  <th scope="col">{{'common.Transactions' | translate}}</th>
+                  <!--                  <th scope="col">Time</th>-->
+                </tr>
+                </thead>
+                <tbody *ngIf="blocks">
+                <tr *ngFor="let block of blocks">
+                  <td>
+                    <a [routerLink]="'/blocks/' + block.roothash" class="like-link" [title]="block.roothash | hash">
+                      {{block.roothash | hash: 5}}
+                    </a>
+                  </td>
+                  <td>
+                    <a [routerLink]="'/blocks/' + block.roothash">
+                      {{block.workchain}} :
+                      {{block.shard | shard}} :
+                      {{block.seqno}}<i class="fa fa-key" *ngIf="block.keyBlock"></i></a>
+                  </td>
+                  <td>
+                    <a [ngClass]="{ 'zero': block.transactionsCount === 0 }"
+                       [routerLink]="'/blocks/' + block.roothash">{{block.transactionsCount}}</a>
+                  </td>
+                  <!--                  <td>{{(block.time | time : 'LTS') | async}}</td>-->
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="index-main__bar clearfix w-100 noselect">
+              <div class="reload-btn cursor-pointer float-right" (click)="load()">
+                <span class="color-gray-400">{{(loadedAt | time : 'LTS') | async}}</span>
+                <i class="fa fa-sync-alt"></i>
+              </div>
+              <div class="mr-2 float-right">
+                <label for="showEmptyBlocks" class="cursor-pointer">
+                  <input type="checkbox" id="showEmptyBlocks" [(ngModel)]="showEmptyBlocks" (change)="load()">&nbsp;<!--
+                  -->{{'common.Empty' | translate}}
+                </label>
+              </div>
+              <a routerLink="/blocks" class="btn btn-primary">{{'main-page.latest-blocks.view-all' | translate}}</a>
+              <!--              <button type="button" class="btn btn-outline-primary">Export to .csv</button>-->
+            </div>
+          </div>
+          <div class="col-12 col-xl-6 index-main__item">
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
