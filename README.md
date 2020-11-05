@@ -1,5 +1,7 @@
 ## FreeTON Blockchain Explorer (frontend)
 
+URL: https://ton-explorer.com
+
 ### Running in dev mode
 
 1. clone this repository<br/> 
