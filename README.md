@@ -1,6 +1,7 @@
 ## FreeTON Blockchain Explorer (frontend)
 
-URL: https://ton-explorer.com
+URL: https://ton-explorer.com  
+Backend: https://github.com/broxus/ton-explorer-backend
 
 ### Running in dev mode
 
